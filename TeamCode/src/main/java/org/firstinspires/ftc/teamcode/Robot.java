@@ -10,5 +10,6 @@ public class Robot extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Hello World","awesome");
         telemetry.addData("Nothing to see:","I want to take over the world");
+        telemetry.addData("Winner:","hjan");
     }
 }
