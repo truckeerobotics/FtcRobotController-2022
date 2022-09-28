@@ -11,5 +11,6 @@ public class Robot extends LinearOpMode {
         telemetry.addData("Hello World","awesome");
         telemetry.addData("Nothing to see:","I want to take over the world");
         telemetry.addData("Winner:","hjan");
+        telemetry.update();
     }
 }
