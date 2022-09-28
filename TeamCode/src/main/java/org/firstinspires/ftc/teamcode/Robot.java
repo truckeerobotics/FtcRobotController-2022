@@ -13,5 +13,6 @@ public class Robot extends LinearOpMode {
         telemetry.addData("Winner:","hjan");
         telemetry.addData("jake","hjan");
         telemetry.update();
+        waitForStart();
     }
 }
