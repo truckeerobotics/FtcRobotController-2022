@@ -1,18 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.bosch.NaiveAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
-
-import java.util.Vector;
-
-import android.hardware.camera2.*;
 
 @TeleOp(name = "Main")
 public class Robot extends LinearOpMode {
@@ -28,7 +22,6 @@ public class Robot extends LinearOpMode {
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.loggingEnabled      = false;
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
 
         controlHubIMU = hardwareMap.get(BNO055IMU.class, "imu");
