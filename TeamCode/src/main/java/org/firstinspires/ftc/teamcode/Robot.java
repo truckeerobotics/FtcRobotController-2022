@@ -1,18 +1,54 @@
 package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+
+import java.util.Vector;
+
+import android.hardware.camera2.*;
+
 @TeleOp(name = "Main")
 public class Robot extends LinearOpMode {
+    BNO055IMU controlHubIMU;
+
     public void runOpMode() throws InterruptedException {
-        telemetry.addData("Hello World","awesome");
-        telemetry.addData("Nothing to see:","I want to take over the world");
-        telemetry.addData("Winner:","hjan");
-        telemetry.addData("jake","hjan");
+        telemetry.addData("Log","Loading Program");
         telemetry.update();
+
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+
+        parameters.mode                = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled      = false;
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+
+        controlHubIMU = hardwareMap.get(BNO055IMU.class, "imu");
+
+        controlHubIMU.initialize(parameters);
+
+        controlHubIMU.startAccelerationIntegration(null, null, 10);
+
         waitForStart();
+
+        
+
+        while (!isStopRequested()) {
+            telemetry.addData("IMU accel", controlHubIMU.getAcceleration());
+            telemetry.addData("IMU position", controlHubIMU.getPosition());
+            telemetry.addData("IMU linear accel", controlHubIMU.getLinearAcceleration());
+            telemetry.addData("IMU calibrated", controlHubIMU.isAccelerometerCalibrated());
+            telemetry.addData("IMU orientation", controlHubIMU.getAngularOrientation());
+
+            telemetry.update();
+        }
     }
 }
