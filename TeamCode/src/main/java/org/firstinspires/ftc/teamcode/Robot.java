@@ -32,7 +32,7 @@ public class Robot extends LinearOpMode {
 
         waitForStart();
 
-        
+
 
         while (!isStopRequested()) {
             telemetry.addData("IMU accel", controlHubIMU.getAcceleration());
