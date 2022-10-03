@@ -7,12 +7,17 @@ import com.qualcomm.hardware.bosch.NaiveAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.driver.DriverInput;
+
 
 @TeleOp(name = "Main")
 public class Robot extends LinearOpMode {
     BNO055IMU controlHubIMU;
 
     public void runOpMode() throws InterruptedException {
+
+        //DRIVER INPUT. CAN BE DELETED
+        DriverInput input = new DriverInput(gamepad1, gamepad2);
         telemetry.addData("Log","Loading Program");
         telemetry.update();
 
@@ -35,6 +40,7 @@ public class Robot extends LinearOpMode {
 
 
         while (!isStopRequested()) {
+            telemetry.addData("ButtonX", input.getButton("controller1ButtonX"));
             telemetry.addData("IMU accel", controlHubIMU.getAcceleration());
             telemetry.addData("IMU position", controlHubIMU.getPosition());
             telemetry.addData("IMU linear accel", controlHubIMU.getLinearAcceleration());

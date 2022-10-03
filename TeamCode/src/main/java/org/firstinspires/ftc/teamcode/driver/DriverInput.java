@@ -38,6 +38,7 @@ public class DriverInput{
      * @return boolean if button is being pressed
      */
     public boolean getButton(String button){
+        update();
         return buttons.get(button);
     }
 
