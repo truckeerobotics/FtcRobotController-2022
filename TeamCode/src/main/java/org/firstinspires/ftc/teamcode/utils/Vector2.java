@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode.utils;
 public class Vector2
 {
     // Members
-    public float x;
-    public float y;
+    public double x;
+    public double y;
 
     // Constructors
     public Vector2() {
@@ -12,14 +12,14 @@ public class Vector2
         this.y = 0.0f;
     }
 
-    public Vector2(float x, float y) {
+    public Vector2(double x, double y) {
         this.x = x;
         this.y = y;
     }
 
     public double distance(Vector2 other) {
-        float v0 = other.x - x;
-        float v1 = other.y - y;
+        double v0 = other.x - x;
+        double v1 = other.y - y;
         return Math.sqrt(v0*v0 + v1*v1);
     }
 
@@ -28,7 +28,7 @@ public class Vector2
         double length = Math.sqrt(x*x + y*y);
 
         if (length != 0.0) {
-            float s = 1.0f / (float)length;
+            double s = 1.0f / (double)length;
             x = x*s;
             y = y*s;
         }
