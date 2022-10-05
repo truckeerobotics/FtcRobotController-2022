@@ -23,16 +23,26 @@ public class Robot extends LinearOpMode {
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.loggingEnabled      = false;
 
-
         controlHubIMU = hardwareMap.get(BNO055IMU.class, "imu");
 
         controlHubIMU.initialize(parameters);
 
         controlHubIMU.startAccelerationIntegration(null, null, 10);
 
+        int acceleratorStatus = 0, gyroStatus = 0;
+        while (!isStopRequested() && !(acceleratorStatus == 3 && gyroStatus == 3)) {
+            BNO055IMU.CalibrationStatus status = controlHubIMU.getCalibrationStatus();
+            acceleratorStatus = ((status.calibrationStatus >> 2) & 0x03);
+            gyroStatus = ((status.calibrationStatus >> 4) & 0x03);
+            telemetry.addData("Calibration data:", controlHubIMU.getCalibrationStatus());
+            telemetry.addData("Calibration accel:", acceleratorStatus);
+            telemetry.addData("Calibration gyro:", gyroStatus);
+            telemetry.update();
+        }
+        telemetry.addData("Calibration:", "done");
+        telemetry.update();
+
         waitForStart();
-
-
 
         while (!isStopRequested()) {
             telemetry.addData("IMU accel", controlHubIMU.getAcceleration());
