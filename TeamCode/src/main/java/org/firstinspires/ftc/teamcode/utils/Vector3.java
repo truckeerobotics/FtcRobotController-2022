@@ -20,28 +20,28 @@ public class Vector3 extends Vector2{
 
 	@Override
 	public void add(Vector3 other) {
-	x += other.x;
-	y += other.y;
-	z += other.z;
-    }
+		x += other.x;
+		y += other.y;
+		z += other.z;
+    	}
 	@Override
 	public void multiply(Vector3 other){
-	x *= other.x;
-	y *= other.y;
-	z *= other.z;
-    }
+		x *= other.x;
+		y *= other.y;
+		z *= other.z;
+    	}
 	@Override
 	public void subtract(Vector3 other){
-	x -= other.x;
-	y -= other.y;
-	z -= other.z;
-    }
+		x -= other.x;
+		y -= other.y;
+		z -= other.z;
+	}
 	@Override
-    public void divide(Vector3 other){
-	x /= other.x;
-	y /= other.y;
-	z /= other.z;
-    }
+    	public void divide(Vector3 other){
+		x /= other.x;
+		y /= other.y;
+		z /= other.z;
+    	}
 	
 	public String toString() {
 		return "x: " + x + ", y: " + y  + ", z: " + z;
