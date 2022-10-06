@@ -1,4 +1,4 @@
-package utils;
+package org.firstinspires.ftc.teamcode.utils;
 
 public class Vector2 {
 	  // Members
