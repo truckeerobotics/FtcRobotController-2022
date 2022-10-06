@@ -1,15 +1,14 @@
-package org.firstinspires.ftc.teamcode.utils;
+package utils;
 
-public class Vector2
-{
-    // Members
+public class Vector2 {
+	  // Members
     public double x;
     public double y;
 
     // Constructors
     public Vector2() {
-        this.x = 0.0f;
-        this.y = 0.0f;
+        this.x = 0.0;
+        this.y = 0.0;
     }
 
     public Vector2(double x, double y) {
@@ -28,7 +27,7 @@ public class Vector2
         double length = Math.sqrt(x*x + y*y);
 
         if (length != 0.0) {
-            double s = 1.0f / (double)length;
+            double s = 1.0 / (double)length;
             x = x*s;
             y = y*s;
         }
@@ -38,15 +37,34 @@ public class Vector2
         x += other.x;
         y += other.y;
     }
+    public void add(Vector3 other) {
+    	x += other.x;
+    	y += other.y;
+    }
+    
     public void multiply(Vector2 other){
         x *= other.x;
         y *= other.y;
     }
+    public void multiply(Vector3 other){
+        x *= other.x;
+        y *= other.y;
+    }
+    
     public void subtract(Vector2 other){
         x -= other.x;
         y -= other.y;
     }
+    public void subtract(Vector3 other){
+        x -= other.x;
+        y -= other.y;
+    }
+    
     public void divide(Vector2 other){
+        x /= other.x;
+        y /= other.y;
+    }
+    public void divide(Vector3 other){
         x /= other.x;
         y /= other.y;
     }
