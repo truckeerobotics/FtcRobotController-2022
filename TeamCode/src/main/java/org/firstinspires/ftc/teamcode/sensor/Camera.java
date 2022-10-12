@@ -85,15 +85,12 @@ public class Camera {
             }
 
         } catch (CameraAccessException cameraException) {
-            telemetry.addData("Failed", "Camera Access Exception");
-            telemetry.addData("Exception", cameraException);
+            telemetry.addData("Failed come on", "Failed");
             cameraException.printStackTrace();
-            return false;
         } catch (Exception exception) {
-            telemetry.addData("Failed", "General exception");
+            telemetry.addData("Failed bruh", "Failed");
             telemetry.addData("Exception", exception);
             exception.printStackTrace();
-            return false;
         }
         telemetry.addData("Camera", "finished init");
         telemetry.update();

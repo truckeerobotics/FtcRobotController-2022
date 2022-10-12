@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.utils;
 
+//Stores 3 values that you can do vector operations on.
 public class Vector3 extends Vector2{
 
 	public double z;

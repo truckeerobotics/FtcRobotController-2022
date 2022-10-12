@@ -6,8 +6,8 @@ import java.util.HashMap;
 
 public class DriverInput{
     public HashMap<String, Boolean> buttons=new HashMap<String, Boolean>();
-    Gamepad gamepad1 = null;
-    Gamepad gamepad2 = null;
+    Gamepad gamepad1;
+    Gamepad gamepad2;
 
 
     public DriverInput(Gamepad gamepad1, Gamepad gamepad2){
