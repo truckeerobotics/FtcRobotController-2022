@@ -7,6 +7,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.camera2.*;
+import android.os.Handler;
+import android.os.Message;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -39,6 +41,16 @@ public class Camera {
         }
     };
 
+    private final Handler.Callback cameraHandlerCallback = new Handler.Callback() {
+        public boolean handleMessage(Message msg) {
+            telemetry.addData("Handle Message!", msg);
+            return true;
+        };
+    };
+
+    // Callback for camera device stuff
+    private final Handler cameraHandler = new Handler(cameraHandlerCallback);
+
     CameraManager cameraManager;
     Context context;
     Telemetry telemetry;
@@ -63,7 +75,7 @@ public class Camera {
                 telemetry.addData("Camera", "Opening");
                 if (ActivityCompat.checkSelfPermission(appContext, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                     telemetry.addData("Camera Open - ID", cameraId);
-                    cameraManager.openCamera(cameraId, cameraStateCallback, null);
+                    cameraManager.openCamera(cameraId, cameraStateCallback, cameraHandler);
                 } else {
                     // Does not have permission, weird? Should not happen, but just in case this check is here.
                     telemetry.addData("Camera" ,"lacks permission");
