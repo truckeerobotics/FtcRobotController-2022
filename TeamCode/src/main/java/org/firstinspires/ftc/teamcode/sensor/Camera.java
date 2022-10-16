@@ -6,8 +6,12 @@ import static android.content.Context.CAMERA_SERVICE;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.hardware.camera2.*;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraDevice;
+import android.hardware.camera2.CameraManager;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 
 import androidx.annotation.NonNull;
@@ -49,7 +53,7 @@ public class Camera {
     };
 
     // Callback for camera device stuff
-    private final Handler cameraHandler = new Handler(cameraHandlerCallback);
+    private Handler cameraHandler;
 
     CameraManager cameraManager;
     Context context;
@@ -57,6 +61,8 @@ public class Camera {
 
     // Gets all the cameras and opens them
     public boolean init(Context appContext, Telemetry robotTelemetry) {
+        cameraHandler = new Handler(Looper.getMainLooper(), cameraHandlerCallback);
+
         context = appContext;
         telemetry = robotTelemetry;
         cameraManager = (CameraManager) context.getSystemService(CAMERA_SERVICE);

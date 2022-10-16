@@ -15,3 +15,9 @@
 //         System.loadLibrary("ftcrobotcontroller")
 //      }
 //    }
+#include "main.h"
+
+JNIEXPORT jint Java_org_firstinspires_ftc_teamcode_Robot_main(JNIEnv *env, jobject obj) {
+    std::cout << "Hello" << std::endl;
+    return 1;
+}
