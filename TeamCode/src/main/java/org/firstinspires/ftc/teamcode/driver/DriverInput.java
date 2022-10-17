@@ -5,7 +5,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import java.util.HashMap;
 
 public class DriverInput{
-    public HashMap<String, Boolean> buttons=new HashMap<String, Boolean>();
+    public HashMap<String, Boolean> buttons= new HashMap<>();
+    HashMap<String, Boolean> oldButtons;
     Gamepad gamepad1;
     Gamepad gamepad2;
 
@@ -13,23 +14,15 @@ public class DriverInput{
     public DriverInput(Gamepad gamepad1, Gamepad gamepad2){
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
-        update();
     }
 
     /**
      * Returns true if button is being pressed while not being pressed the previous iteration
      * @param button Button Name
-     * @return boolean if button is being pressed for the first time this interation
+     * @return boolean if button is being pressed for the first time this iteration
      */
     public boolean onPush(String button){
-        HashMap<String, Boolean> oldButtons=new HashMap<String, Boolean>();
-        oldButtons = buttons;
-        update();
-        if(oldButtons.get(button) != buttons.get(button)){
-            return true;
-        }else{
-            return false;
-        }
+        return oldButtons.get(button) != buttons.get(button);
     }
 
     /**
@@ -38,7 +31,6 @@ public class DriverInput{
      * @return boolean if button is being pressed
      */
     public boolean getButton(String button){
-        update();
         return buttons.get(button);
     }
 
@@ -46,6 +38,7 @@ public class DriverInput{
      * Update Button Hashmap
      */
     public void update(){
+        oldButtons = buttons;
         buttons.put("controller1ButtonX", gamepad1.x); //gamepad1.x
         buttons.put("controller1ButtonB", gamepad1.b); //gamepad1.b
         buttons.put("controller1ButtonY", gamepad1.y); //gamepad1.y
