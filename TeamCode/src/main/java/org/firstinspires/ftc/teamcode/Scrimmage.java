@@ -25,7 +25,7 @@ public class Scrimmage extends LinearOpMode {
                 modeItem.setValue("Tank");
                 telemetry.update();
                 leftMotor.setPower(gamepad1.left_stick_y);
-                rightMotor.setPower(gamepad2.left_stick_y);
+                rightMotor.setPower(gamepad1.right_stick_y);
             }else{
                 //No turning yet
                 modeItem.setValue("Normal");
