@@ -16,15 +16,15 @@ public class Robot extends LinearOpMode {
     Context appContext;
 
     static {
-        System.loadLibrary("ftcrobotcontroller");
+        System.loadLibrary("cameraAwareness");
     }
 
-    public native int main();
+    public native int initCameraAwareness();
 
     public void runOpMode() throws InterruptedException {
         appContext = hardwareMap.appContext;
 
-        telemetry.addData("main", main());
+        telemetry.addData("cameraAwareness: ", initCameraAwareness());
 
         telemetry.addData("before start", "prepare for death");
         telemetry.update();
