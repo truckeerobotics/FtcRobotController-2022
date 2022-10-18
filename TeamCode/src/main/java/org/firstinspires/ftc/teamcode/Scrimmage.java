@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.driver.DriverInput;
 
 @TeleOp(name = "Scrimmage")
 public class Scrimmage extends LinearOpMode {
@@ -17,7 +16,7 @@ public class Scrimmage extends LinearOpMode {
         rightMotor.setDirection(DcMotor.Direction.REVERSE);
 
         telemetry.setAutoClear(false);
-        Telemetry.Item debugItem = telemetry.addData("OpMode>", "Waiting for Start");
+        Telemetry.Item debugItem = telemetry.addData("OpMode", "Waiting for Start");
         telemetry.update();
 
         waitForStart();
