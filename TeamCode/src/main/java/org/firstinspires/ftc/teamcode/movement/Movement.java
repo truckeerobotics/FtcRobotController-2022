@@ -12,8 +12,8 @@ public class Movement {
     private HardwareMap hardware;
     private LinearOpMode opmode;
 
-    public Movement(LinearOpMode opmode, HardwareMap hardware){
-        this.hardware = hardware;
+    public Movement(LinearOpMode opmode){
+        this.hardware = opmode.hardwareMap;
         this.opmode = opmode;
     }
 

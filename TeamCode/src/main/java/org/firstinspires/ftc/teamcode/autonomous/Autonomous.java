@@ -13,7 +13,7 @@ public class Autonomous {
 
     public Autonomous(LinearOpMode opmode){
         this.opmode = opmode;
-        this.move = new Movement(opmode, opmode.hardwareMap);
+        this.move = new Movement(opmode);
         this.leftEncoder = new Encoder(move.leftMotor);
         this.rightEncoder = new Encoder(move.rightMotor);
     }
