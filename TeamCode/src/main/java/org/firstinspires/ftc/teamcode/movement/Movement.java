@@ -11,21 +11,23 @@ public class Movement {
 
     private HardwareMap hardware;
     private LinearOpMode opmode;
+    public DcMotor leftMotor;
+    public DcMotor rightMotor;
 
     public Movement(LinearOpMode opmode){
         this.hardware = opmode.hardwareMap;
         this.opmode = opmode;
+        leftMotor = hardware.dcMotor.get("left_drive");
+        rightMotor = hardware.dcMotor.get("right_drive");
     }
 
     /**
      *  TEMPORARY CODE FOR SCRIMMAGE
      */
-    public DcMotor leftMotor = hardware.dcMotor.get("left_drive");
-    public DcMotor rightMotor = hardware.dcMotor.get("right_drive");
 
     public void driveForward(double speed){
         leftMotor.setPower(speed);
-        leftMotor.setPower(speed);
+        rightMotor.setPower(-speed);
     }
 
     public static final int LEFT = 0;

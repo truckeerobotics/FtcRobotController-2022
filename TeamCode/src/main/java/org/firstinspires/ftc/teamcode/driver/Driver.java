@@ -8,11 +8,29 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Driver {
     LinearOpMode opmode;
+
+    private final double LateralSpeed = 0.6;
+    private final double RotationalSpeed = 0.7;
+
+    private final double drivingPowerForwardDelta = 0.02;
+    private final double drivingPowerBackwardDelta = 0.0175;
+    private final double drivingPowerDifferenceCutoff = 0.1;
+    private final double drivingPowerRotationDelta = 0.04;
+
+    private double yCurrent = 0;
+    private double rxCurrent = 0;
+
+    private double yTarget = 0;
+    private double rxTarget = 0;
+
     public Driver(LinearOpMode opmode){
         this.opmode = opmode;
     }
 
     public void run(){
+
+
+
         DcMotor leftMotor = opmode.hardwareMap.dcMotor.get("left_drive");
         DcMotor rightMotor = opmode.hardwareMap.dcMotor.get("right_drive");
 
@@ -28,12 +46,43 @@ public class Driver {
         opmode.telemetry.update();
 
         while (!opmode.isStopRequested()) {
-            double drive = -opmode.gamepad1.left_stick_y;
-            double turn = opmode.gamepad1.right_stick_x;
+
+            double y = yCurrent;
+            double rx = rxCurrent;
+
+            // Smart/Smooth driving logic
+
+            yTarget = -opmode.gamepad1.left_stick_y * LateralSpeed; // Remember, this is reversed!
+            rxTarget = -opmode.gamepad1.right_stick_x * RotationalSpeed;
+
+            // If difference cutoff is not reached, then move current/actual movement to target movement.
+            if (!(Math.abs(yTarget - yCurrent) < drivingPowerDifferenceCutoff)) {
+                if (yTarget > yCurrent) {
+                    yCurrent += drivingPowerForwardDelta;
+                } else {
+                    yCurrent -= drivingPowerBackwardDelta;
+                }
+            } else {
+                yCurrent = yTarget;
+            }
+
+            if (!(Math.abs(rxTarget - rxCurrent) < drivingPowerDifferenceCutoff)) {
+                if (rxTarget > rxCurrent) {
+                    rxCurrent += drivingPowerRotationDelta;
+                } else {
+                    rxCurrent -= drivingPowerRotationDelta;
+                }
+            } else {
+                rxCurrent = rxTarget;
+            }
+
+            double drive = yCurrent;
+            double turn = rxCurrent;
+            double denominator = Math.max(Math.abs(y) + Math.abs(rx), 1);
             double leftPower = Range.clip(drive + turn, -1.0, 1.0);
             double rightPower = Range.clip(drive - turn, -1.0, 1.0);
-            leftMotor.setPower(leftPower);
-            rightMotor.setPower(rightPower);
+            leftMotor.setPower(leftPower/denominator);
+            rightMotor.setPower(rightPower/denominator);
         }
     }
 }

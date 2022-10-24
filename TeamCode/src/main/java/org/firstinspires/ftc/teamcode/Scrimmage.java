@@ -37,6 +37,7 @@ public class Scrimmage {
             Driver driver = new Driver(opmode);
             driver.run();
         }else{
+            opmode.waitForStart();
             Autonomous auto = new Autonomous(opmode);
             if(type.equals("AutoBlueLeft")){
                 auto.blueLeft();
