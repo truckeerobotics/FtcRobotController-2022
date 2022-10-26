@@ -19,26 +19,38 @@ public class Autonomous {
     }
 
     public Boolean blueLeft(){
-        move.driveInches(5, 1.0, leftEncoder, rightEncoder);
-        move.turn(Movement.LEFT, 1.0);
+        opmode.resetRuntime();
+        while(opmode.getRuntime() < 1.25){
+            move.driveForward(1.0);
+
+        }
         return true;
     }
 
     public Boolean blueRight(){
-        move.driveInches(5, 1.0, leftEncoder, rightEncoder);
-        move.turn(Movement.LEFT, 1.0);
+        opmode.resetRuntime();
+        while(opmode.getRuntime() < 1.25){
+            move.driveForward(1.0);
+
+        }
         return true;
     }
 
     public Boolean redLeft(){
-        move.driveInches(5, 1.0, leftEncoder, rightEncoder);
-        move.turn(Movement.LEFT, 1.0);
+        opmode.resetRuntime();
+        while(opmode.getRuntime() < 1.25){
+            move.driveForward(1.0);
+
+        }
         return true;
     }
 
     public Boolean redRight(){
-        move.driveInches(5, 1.0, leftEncoder, rightEncoder);
-        move.turn(Movement.LEFT, 1.0);
+        opmode.resetRuntime();
+        while(opmode.getRuntime() < 1.25){
+            move.driveForward(1.0);
+
+        }
         return true;
     }
 }

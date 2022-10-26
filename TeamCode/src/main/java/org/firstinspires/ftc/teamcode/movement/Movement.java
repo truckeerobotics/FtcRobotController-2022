@@ -48,10 +48,9 @@ public class Movement {
     }
 
     public void driveInches(int inches, double speed, Encoder leftEncoder, Encoder rightEncoder){
-        while(leftEncoder.getDiffrence() != inches && rightEncoder.getDiffrence() != inches && !opmode.isStopRequested()){
+        while(leftEncoder.getDiffrence() < inches && rightEncoder.getDiffrence() < inches && !opmode.isStopRequested()){
             driveForward(speed);
         }
-        stop();
     }
 
     /**
@@ -62,16 +61,16 @@ public class Movement {
 
 
     /**
+     * This method moves the robot to a certain position created with the Vector2 class
      * @param pos Inputted position from Vector2 that is the target point to end at
      * @param speed Target speed for robot to move to target position
-     *
      */
     public void goToPoint(Vector2 pos, double speed){
 
     }
 
     /**
-     *
+     * This method moves the robot to certain set positions inside an array with Vector2 points
      * @param points Array of points for robot to move to
      * @param speed Target speed of robot to follow selected path
      */
