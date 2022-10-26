@@ -48,9 +48,20 @@ public class Movement {
     }
 
     public void driveInches(int inches, double speed, Encoder leftEncoder, Encoder rightEncoder){
-        while(leftEncoder.getDiffrence() < inches && rightEncoder.getDiffrence() < inches && !opmode.isStopRequested()){
+
+
+        while(-leftEncoder.getDifference() < inches && rightEncoder.getDifference() < inches && !opmode.isStopRequested()) {
             driveForward(speed);
+            opmode.telemetry.addData("left dif", -leftEncoder.getDifference());
+            opmode.telemetry.addData("right dif", rightEncoder.getDifference());
+            opmode.telemetry.addData("left enc", leftEncoder);
+            opmode.telemetry.addData("right enc", rightEncoder);
+            opmode.telemetry.addData("stop req", opmode.isStopRequested());
+            opmode.telemetry.addData("inches", inches);
+            opmode.telemetry.addData("uhg", leftEncoder.getDifference() < inches && rightEncoder.getDifference() < inches && !opmode.isStopRequested());
+            opmode.telemetry.update();
         }
+
     }
 
     /**

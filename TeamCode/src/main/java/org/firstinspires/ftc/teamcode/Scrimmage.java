@@ -44,7 +44,7 @@ public class Scrimmage {
             }else if(type.equals("AutoBlueRight")){
                 auto.blueRight();
             }else if(type.equals("AutoRedLeft")){
-                auto.blueLeft();
+                auto.redLeft();
             }else if(type.equals("AutoRedRight")) {
                 auto.redRight();
             }

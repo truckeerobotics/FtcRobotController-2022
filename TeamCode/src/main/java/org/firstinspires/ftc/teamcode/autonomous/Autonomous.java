@@ -19,38 +19,58 @@ public class Autonomous {
     }
 
     public Boolean blueLeft(){
-        opmode.resetRuntime();
-        while(opmode.getRuntime() < 1.25){
-            move.driveForward(1.0);
-
-        }
+        move.driveInches(34, 0.3, leftEncoder, rightEncoder);
         return true;
     }
 
     public Boolean blueRight(){
-        opmode.resetRuntime();
-        while(opmode.getRuntime() < 1.25){
-            move.driveForward(1.0);
-
-        }
+        move.driveInches(25, 0.3, leftEncoder, rightEncoder);
         return true;
     }
 
     public Boolean redLeft(){
-        opmode.resetRuntime();
-        while(opmode.getRuntime() < 1.25){
-            move.driveForward(1.0);
-
-        }
+        move.driveInches(25, 0.3, leftEncoder, rightEncoder);
         return true;
     }
 
     public Boolean redRight(){
-        opmode.resetRuntime();
-        while(opmode.getRuntime() < 1.25){
-            move.driveForward(1.0);
-
-        }
+        move.driveInches(34, 0.3, leftEncoder, rightEncoder);
         return true;
     }
+
+//    public Boolean blueLeft(){
+//        opmode.resetRuntime();
+//        while(opmode.getRuntime() < 1.25){
+//            move.driveForward(1.0);
+//
+//        }
+//        return true;
+//    }
+//
+//    public Boolean blueRight(){
+//        opmode.resetRuntime();
+//        while(opmode.getRuntime() < 1.25){
+//            move.driveForward(1.0);
+//
+//        }
+//        return true;
+//    }
+//
+//    public Boolean redLeft(){
+//        opmode.resetRuntime();
+//        while(opmode.getRuntime() < 1.25){
+//            move.driveForward(1.0);
+//
+//        }
+//        return true;
+//    }
+//
+//    public Boolean redRight(){
+//        opmode.resetRuntime();
+//        while(opmode.getRuntime() < 1.25){
+//            move.driveForward(1.0);
+//
+//        }
+//        return true;
+//    }
 }

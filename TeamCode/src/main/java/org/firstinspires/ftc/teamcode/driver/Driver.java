@@ -77,7 +77,7 @@ public class Driver {
             }
 
             double drive = yCurrent;
-            double turn = rxCurrent;
+            double turn = -rxCurrent;
             double denominator = Math.max(Math.abs(y) + Math.abs(rx), 1);
             double leftPower = Range.clip(drive + turn, -1.0, 1.0);
             double rightPower = Range.clip(drive - turn, -1.0, 1.0);
