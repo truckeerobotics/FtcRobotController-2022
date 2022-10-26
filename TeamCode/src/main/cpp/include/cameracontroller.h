@@ -13,9 +13,9 @@
 class CameraController {
 private:
 
+
 public:
-    int initCameraDevices();
-    int initCameraSurfaces();
+
     CameraController();
 
 };

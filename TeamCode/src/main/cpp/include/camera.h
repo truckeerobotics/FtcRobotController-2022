@@ -7,7 +7,7 @@
 
 #include "cameracontroller.h"
 #include <jni.h>
-
+#include "tensorflow/lite/c/common.h"
 
 
 extern "C" JNIEXPORT jint JNICALL

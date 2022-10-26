@@ -5,13 +5,4 @@
 #include "../include/cameracontroller.h"
 
 CameraController::CameraController() {
-
 };
-
-int CameraController::initCameraDevices() {
-    return 5;
-}
-
-int CameraController::initCameraSurfaces() {
-    return 6;
-}

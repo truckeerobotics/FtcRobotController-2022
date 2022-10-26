@@ -11,6 +11,29 @@ cmake_minimum_required(VERSION 3.18.1)
 project("cameraAwareness")
 # ${PROJECT_SOURCE_DIR}
 
+#Command stuff:
+#/Users/alex/Library/Android/sdk/ndk/21.3.6528147
+#cmake -DCMAKE_TOOLCHAIN_FILE=/Users/alex/Library/Android/sdk/ndk/21.3.6528147/build/cmake/android.toolchain.cmake -DANDROID_ABI=arm64-v8a ../tensorflow_src/tensorflow/lite
+
+#Add Tensorflow
+#set(TENSORFLOW_SOURCE_DIR "" CACHE PATH
+#        "Directory that contains the TensorFlow project" )
+#if(NOT TENSORFLOW_SOURCE_DIR)
+#    get_filename_component(TENSORFLOW_SOURCE_DIR
+#            "${CMAKE_CURRENT_LIST_DIR}/../../../../" ABSOLUTE)
+#endif()
+
+#add_subdirectory(
+#        "${TENSORFLOW_SOURCE_DIR}/tensorflow/lite"
+#        "${CMAKE_CURRENT_BINARY_DIR}/tensorflow-lite" EXCLUDE_FROM_ALL)
+
+set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
+
+add_subdirectory(third_party/tflite)
+
+
+
+
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds them for you.
@@ -38,6 +61,7 @@ find_library( # Sets the name of the path variable.
               # you want CMake to locate.
               log )
 
+
 # Specifies libraries CMake should link to your target library. You
 # can link multiple libraries, such as libraries you define in this
 # build script, prebuilt third-party libraries, or system libraries.
@@ -47,6 +71,6 @@ target_link_libraries( # Specifies the target library.
 
                        # Links the target library to the log library
                        # included in the NDK.
-                       ${log-lib} )
+                       ${log-lib} ${log-lib} tflite)
 
 
