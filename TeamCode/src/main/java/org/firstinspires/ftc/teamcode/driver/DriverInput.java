@@ -14,6 +14,7 @@ public class DriverInput{
     public DriverInput(Gamepad gamepad1, Gamepad gamepad2){
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
+        start();
     }
 
     /**
@@ -21,24 +22,19 @@ public class DriverInput{
      * @param button Button Name
      * @return boolean if button is being pressed for the first time this iteration
      */
-    public boolean onPush(String button){
-        return oldButtons.get(button) != buttons.get(button);
-    }
-
-    /**
-     * Returns true if button is being pressed
-     * @param button Button Name
-     * @return boolean if button is being pressed
-     */
-    public boolean getButton(String button){
-        return buttons.get(button);
+    public boolean onPush(boolean currentButton, String button){
+        boolean result = false;
+        if(currentButton && !buttons.get(button)){
+            result=true;
+        }
+        buttons.put(button, currentButton);
+        return result;
     }
 
     /**
      * Update Button Hashmap
      */
-    public void update(){
-        oldButtons = buttons;
+    public void start(){
         buttons.put("controller1ButtonX", gamepad1.x); //gamepad1.x
         buttons.put("controller1ButtonB", gamepad1.b); //gamepad1.b
         buttons.put("controller1ButtonY", gamepad1.y); //gamepad1.y
