@@ -1,4 +1,19 @@
 
+message(AUTHOR_WARNING "fuck you, water fills your house")
+message(AUTHOR_WARNING "fuck you, water fills your house")
+message(AUTHOR_WARNING "fuck you, water fills your house")
+message(AUTHOR_WARNING "fuck you, water fills your house")
+message(AUTHOR_WARNING "fuck you, water fills your house")
+message(AUTHOR_WARNING "fuck you, water fills your house")
+message(AUTHOR_WARNING "fuck you, water fills your house")
+message(AUTHOR_WARNING "fuck you, water fills your house")
+message(AUTHOR_WARNING "fuck you, water fills your house")
+message(AUTHOR_WARNING "fuck you, water fills your house")
+message(AUTHOR_WARNING "fuck you, water fills your house")
+
+
+
+
 # For more information about using CMake with Android Studio, read the
 # documentation: https://d.android.com/studio/projects/add-native-code.html
 
@@ -15,24 +30,12 @@ project("cameraAwareness")
 #/Users/alex/Library/Android/sdk/ndk/21.3.6528147
 #cmake -DCMAKE_TOOLCHAIN_FILE=/Users/alex/Library/Android/sdk/ndk/21.3.6528147/build/cmake/android.toolchain.cmake -DANDROID_ABI=arm64-v8a ../tensorflow_src/tensorflow/lite
 
-#Add Tensorflow
-#set(TENSORFLOW_SOURCE_DIR "" CACHE PATH
-#        "Directory that contains the TensorFlow project" )
-#if(NOT TENSORFLOW_SOURCE_DIR)
-#    get_filename_component(TENSORFLOW_SOURCE_DIR
-#            "${CMAKE_CURRENT_LIST_DIR}/../../../../" ABSOLUTE)
-#endif()
+add_subdirectory(
+        "third_party/tflite" EXCLUDE_FROM_ALL)
 
-#add_subdirectory(
-#        "${TENSORFLOW_SOURCE_DIR}/tensorflow/lite"
-#        "${CMAKE_CURRENT_BINARY_DIR}/tensorflow-lite" EXCLUDE_FROM_ALL)
+#add_subdirectory(third_party/tflite)
 
-set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
-
-add_subdirectory(third_party/tflite)
-
-
-
+#include_directories(src/main/cpp/third_party/tflite/include/)
 
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
@@ -46,7 +49,7 @@ add_library( # Sets the name of the library.
              SHARED
 
              # Provides a relative path to your source file(s).
-        "include/camera.h" "src/camera.cpp" "include/cameracontroller.h" "src/cameracontroller.cpp")
+        "include/camera.h" "src/camera.cpp" "include/cameracontroller.h" "src/cameracontroller.cpp" )
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by

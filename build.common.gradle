@@ -115,7 +115,7 @@ android {
         pickFirst '**/*.so'
     }
     sourceSets.main {
-        jni.srcDirs = []
+        jni.srcDirs = ['src/main/cpp/third_party/tflite/lib']
         jniLibs.srcDir rootProject.file('libs')
     }
     ndkVersion '21.3.6528147'
