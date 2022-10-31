@@ -1,18 +1,4 @@
 
-message(AUTHOR_WARNING "fuck you, water fills your house")
-message(AUTHOR_WARNING "fuck you, water fills your house")
-message(AUTHOR_WARNING "fuck you, water fills your house")
-message(AUTHOR_WARNING "fuck you, water fills your house")
-message(AUTHOR_WARNING "fuck you, water fills your house")
-message(AUTHOR_WARNING "fuck you, water fills your house")
-message(AUTHOR_WARNING "fuck you, water fills your house")
-message(AUTHOR_WARNING "fuck you, water fills your house")
-message(AUTHOR_WARNING "fuck you, water fills your house")
-message(AUTHOR_WARNING "fuck you, water fills your house")
-message(AUTHOR_WARNING "fuck you, water fills your house")
-
-
-
 
 # For more information about using CMake with Android Studio, read the
 # documentation: https://d.android.com/studio/projects/add-native-code.html

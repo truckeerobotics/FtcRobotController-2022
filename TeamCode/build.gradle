@@ -20,7 +20,8 @@ android {
     defaultConfig {
         externalNativeBuild {
             cmake {
-                cppFlags ''
+                cppFlags ""
+                arguments "-DANDROID_STL=c++_shared"
             }
         }
     }
