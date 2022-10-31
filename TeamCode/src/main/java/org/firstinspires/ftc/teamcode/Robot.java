@@ -18,13 +18,13 @@ public class Robot extends LinearOpMode {
     static {
         System.loadLibrary("cameraAwareness");
     }
-
-    public native int initCameraAwareness();
+//
+//    public native int initCameraAwareness();
 
     public void runOpMode() throws InterruptedException {
         appContext = hardwareMap.appContext;
 
-        telemetry.addData("cameraAwareness: ", initCameraAwareness());
+
 
         telemetry.addData("before start", "prepare for death");
         telemetry.update();
@@ -33,6 +33,13 @@ public class Robot extends LinearOpMode {
 
         waitForStart();
 
+        while(getRuntime()<5.00){
+
+        }
+//        telemetry.addData("cameraAwareness: ", initCameraAwareness());
+        while(getRuntime()<5.00){
+
+        }
         telemetry.addData("Starting", "Camera Instance");
         telemetry.update();
         boolean result = cameraInstance.init(appContext, telemetry);
