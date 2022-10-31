@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.utils;
+package org.firstinspires.ftc.teamcode.other;
 
 //Stores 2 values that you can do vector operations on.
 public class Vector2 {

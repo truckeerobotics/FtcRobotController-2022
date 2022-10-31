@@ -5,12 +5,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.sensor.Encoder;
-import org.firstinspires.ftc.teamcode.utils.Vector2;
+import org.firstinspires.ftc.teamcode.other.Vector2;
 
 public class Movement {
 
     private HardwareMap hardware;
     private LinearOpMode opmode;
+
     public DcMotor leftMotor;
     public DcMotor rightMotor;
 
@@ -20,10 +21,6 @@ public class Movement {
         leftMotor = hardware.dcMotor.get("left_drive");
         rightMotor = hardware.dcMotor.get("right_drive");
     }
-
-    /**
-     *  TEMPORARY CODE FOR SCRIMMAGE
-     */
 
     public void driveForward(double speed){
         leftMotor.setPower(speed);
@@ -48,8 +45,6 @@ public class Movement {
     }
 
     public void driveInches(int inches, double speed, Encoder leftEncoder, Encoder rightEncoder){
-
-
         while(-leftEncoder.getDifference() < inches && rightEncoder.getDifference() < inches && !opmode.isStopRequested()) {
             driveForward(speed);
             opmode.telemetry.addData("left dif", -leftEncoder.getDifference());
@@ -61,15 +56,7 @@ public class Movement {
             opmode.telemetry.addData("uhg", leftEncoder.getDifference() < inches && rightEncoder.getDifference() < inches && !opmode.isStopRequested());
             opmode.telemetry.update();
         }
-
     }
-
-    /**
-     *  END TEMPORARY CODE FOR SCRIMMAGE
-     */
-
-
-
 
     /**
      * This method moves the robot to a certain position created with the Vector2 class

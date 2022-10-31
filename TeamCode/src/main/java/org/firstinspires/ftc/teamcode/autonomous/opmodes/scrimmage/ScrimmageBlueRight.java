@@ -1,10 +1,12 @@
-package org.firstinspires.ftc.teamcode.opmodes.autonomous;
+package org.firstinspires.ftc.teamcode.autonomous.opmodes.scrimmage;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Scrimmage;
+
+@Disabled
 
 @Autonomous(name = "ScrimmageBlueRight")
 public class ScrimmageBlueRight extends LinearOpMode {
