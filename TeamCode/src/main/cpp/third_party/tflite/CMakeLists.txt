@@ -6,12 +6,6 @@ set(TFLITE_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include")
 set(TFLITE_THIRDPARTY_DIR "${TFLITE_INCLUDE_DIRS}/tensorflow/lite/tools/make/downloads")
 set(TFLITE_LIBRARY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/${ANDROID_ABI}")
 
-message("include dir ${TFLITE_INCLUDE_DIRS}")
-message("third party dir ${TFLITE_THIRDPARTY_DIR}")
-message("library dir ${TFLITE_LIBRARY_DIR}")
-message("${TFLITE_LIBRARY_DIR}/libtensorflowlite.so")
-
-
 target_include_directories(tflite INTERFACE
         ${TFLITE_INCLUDE_DIRS}
         "${TFLITE_THIRDPARTY_DIR}/flatbuffers/include"

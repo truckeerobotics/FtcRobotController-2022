@@ -6,10 +6,12 @@ import static android.content.Context.CAMERA_SERVICE;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.ImageFormat;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
+import android.media.ImageReader;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -58,9 +60,14 @@ public class Camera {
     CameraManager cameraManager;
     Context context;
     Telemetry telemetry;
+    CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP cameraConfigurationMap;
+    ImageReader imageReaderRaw;
 
     // Gets all the cameras and opens them
     public boolean init(Context appContext, Telemetry robotTelemetry) {
+        //val imageReader = ImageReader.newInstance(previewSize.width, previewSize.height, ImageFormat.RAW_SENSOR, 1);
+        //imageReader.setOnImageAvailableListener(imageHandler, cameraHandler);
+
         cameraHandler = new Handler(Looper.getMainLooper(), cameraHandlerCallback);
 
         context = appContext;

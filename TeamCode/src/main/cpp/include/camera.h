@@ -8,6 +8,7 @@
 #include "cameracontroller.h"
 #include <jni.h>
 #include "tensorflow/lite/c/common.h"
+#include "tensorflow/lite/c/c_api.h"
 
 extern "C" JNIEXPORT jint JNICALL
 Java_org_firstinspires_ftc_teamcode_Robot_initCameraAwareness(JNIEnv *env, jobject obj);
