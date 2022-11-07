@@ -10,6 +10,7 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.SessionConfiguration;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
@@ -158,11 +159,20 @@ public class Camera {
                 ImageAcquired = telemetry.addData("New Image Acquired At","NULL");
             }
             ImageAcquired.setValue(latestImage.getTimestamp());
+            telemetry.addData("Image", "New Image has been collected");
             telemetry.update();
 
             for (CameraCallback callback: cameraCallbacks) {
                 callback.imageReadyCallback(latestImage);
             }
+            //latestImage.close();
+        }
+    };
+
+    private CameraCaptureSession.CaptureCallback imageCaptureCallback = new CameraCaptureSession.CaptureCallback() {
+        public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
+            telemetry.addData("Capture", "Completed Capture");
+            telemetry.update();
         }
     };
 
@@ -177,7 +187,7 @@ public class Camera {
             telemetry.addData("Capture", "Session Configured!");
             telemetry.update();
             try {
-                captureSession.setRepeatingRequest(captureSessionRequestBuilder.build(), null, threadHandler);
+                captureSession.setRepeatingRequest(captureSessionRequestBuilder.build(), imageCaptureCallback, threadHandler);
             } catch (CameraAccessException exception) {
                 telemetry.addData("Failed", "CameraAccessException Exception");
                 telemetry.addData("Failed to Start Capture!", exception);
