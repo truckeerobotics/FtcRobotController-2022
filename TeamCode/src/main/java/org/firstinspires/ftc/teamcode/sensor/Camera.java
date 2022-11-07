@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.sensor;
 
-
-import static android.content.Context.CAMERA_SERVICE;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -11,105 +8,215 @@ import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
+import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.params.SessionConfiguration;
+import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.Image;
 import android.media.ImageReader;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
+import android.util.Log;
+import android.util.Size;
+import android.view.Surface;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 public class Camera {
 
-    // Callback for camera device stuff
-    private final CameraDevice.StateCallback cameraStateCallback = new CameraDevice.StateCallback() {
-        @Override
-        public void onOpened(@NonNull CameraDevice camera) {
-            telemetry.addData("CameraOpened", "successfully opened camera!");
-            telemetry.update();
-            System.out.print("SUCCESSFULLY OPENED CAMERA!");
-        }
+    int IMAGE_FORMAT = ImageFormat.YUV_420_888;
 
-        @Override
-        public void onDisconnected(CameraDevice camera) {
-            telemetry.addData("CameraDisconnected", "camera has been disconnected!");
-            telemetry.update();
-            System.out.print("CAMERA DISCONNECTED!");
-        }
+    private CameraCharacteristics characteristics;
+    private StreamConfigurationMap streamConfigurationMap;
+    private ImageReader imageReader;
+    private Surface imageSurface;
+    private Size maxImageSize;
+    private String name;
+    private CameraDevice cameraDevice;
 
-        @Override
-        public void onError(CameraDevice camera, int error) {
-            telemetry.addData("CameraError", "failed to open camera!");
-            telemetry.update();
-            System.out.print("FAILED TO OPEN CAMERA!");
-        }
-    };
+    private Telemetry telemetry;
+    private CameraManager cameraManager;
 
-    private final Handler.Callback cameraHandlerCallback = new Handler.Callback() {
-        public boolean handleMessage(Message msg) {
-            telemetry.addData("Handle Message!", msg);
-            return true;
-        };
-    };
-
-    // Callback for camera device stuff
-    private Handler cameraHandler;
-
-    CameraManager cameraManager;
-    Context context;
-    Telemetry telemetry;
-    CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP cameraConfigurationMap;
-    ImageReader imageReaderRaw;
-
-    // Gets all the cameras and opens them
-    public boolean init(Context appContext, Telemetry robotTelemetry) {
-        //val imageReader = ImageReader.newInstance(previewSize.width, previewSize.height, ImageFormat.RAW_SENSOR, 1);
-        //imageReader.setOnImageAvailableListener(imageHandler, cameraHandler);
-
-        cameraHandler = new Handler(Looper.getMainLooper(), cameraHandlerCallback);
-
-        context = appContext;
-        telemetry = robotTelemetry;
-        cameraManager = (CameraManager) context.getSystemService(CAMERA_SERVICE);
-
-        telemetry.addData("Camera", "init");
-        telemetry.update();
+    public Camera(String cameraId, String name, CameraManager cameraManager, Telemetry opmodeTelemetry, Context appContext, Handler threadHandler) {
+        this.telemetry = opmodeTelemetry;
+        this.cameraManager = cameraManager;
+        this.name = name;
 
         try {
-            String[] cameraIdList = cameraManager.getCameraIdList();
+            this.characteristics = cameraManager.getCameraCharacteristics(cameraId);
+        } catch (CameraAccessException exception) {
+            telemetry.addData("Failed", "CameraAccessException Exception");
+            telemetry.addData("Failed Getting Camera Characteristics", exception);
+            telemetry.update();
+            exception.printStackTrace();
+            return;
+        }
 
-            int cameraIdCount = cameraIdList.length;
-            telemetry.addData("Camera Id Count", cameraIdCount);
-            for (int cameraIndex = 0; cameraIndex < cameraIdCount; cameraIndex++) {
-                String cameraId = cameraIdList[cameraIndex];
-                CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId);
-                telemetry.addData("Camera", "Opening");
-                if (ActivityCompat.checkSelfPermission(appContext, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                    telemetry.addData("Camera Open - ID", cameraId);
-                    cameraManager.openCamera(cameraId, cameraStateCallback, cameraHandler);
-                } else {
-                    // Does not have permission, weird? Should not happen, but just in case this check is here.
-                    telemetry.addData("Camera" ,"lacks permission");
-                    telemetry.update();
-                    return false;
-                }
+        //-------------------------------------------------//
+
+        // Check permissions, open the camera and handle any errors
+        if (ActivityCompat.checkSelfPermission(appContext, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            telemetry.addData("Opening Camera - ID", cameraId);
+            telemetry.update();
+            try {
+                cameraManager.openCamera(cameraId, stateCallback, threadHandler);
+            } catch (CameraAccessException exception) {
+                telemetry.addData("Failed", "CameraAccessException Exception");
+                telemetry.addData("Failed Opening Camera", exception);
+                telemetry.update();
+                exception.printStackTrace();
+                return;
             }
 
-        } catch (CameraAccessException cameraException) {
-            telemetry.addData("Failed come on", "Failed");
-            cameraException.printStackTrace();
-        } catch (Exception exception) {
-            telemetry.addData("Failed bruh", "Failed");
-            telemetry.addData("Exception", exception);
-            exception.printStackTrace();
+        } else {
+            // Does not have permission, weird? Should not happen, but just in case this check is here.
+            telemetry.addData("Camera" ,"Lacks Permission");
+            telemetry.update();
+            return;
         }
-        telemetry.addData("Camera", "finished init");
+
+        //-------------------------------------------------//
+
+        StreamConfigurationMap cameraStreamConfigurationMap = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+
+        telemetry.addData("Log", "Getting biggest output size");
         telemetry.update();
 
-        return true;
+        // Compares sizes and get biggest camera can output (by area)
+        Size cameraMaxOutputSize = Collections.max(Arrays.asList(cameraStreamConfigurationMap.getOutputSizes(IMAGE_FORMAT)), new CompareSizesByArea());
+
+        telemetry.addData("Log", "Got biggest output size");
+        telemetry.update();
+
+        ImageReader imageReader = ImageReader.newInstance(cameraMaxOutputSize.getWidth(), cameraMaxOutputSize.getHeight(), IMAGE_FORMAT, 1);
+        imageReader.setOnImageAvailableListener(imageReaderListener, threadHandler);
+
+        Surface imageSurface = imageReader.getSurface();
+
+        this.imageSurface = imageSurface;
+        this.maxImageSize = cameraMaxOutputSize;
+        this.imageReader = imageReader;
+        this.streamConfigurationMap = cameraStreamConfigurationMap;
+
+        //-------------------------------------------------//
+
+        telemetry.addData("Finished Camera Init", "Success?");
+        telemetry.update();
+
     }
 
+    // Implement this for a callback
+    interface CameraCallback {
+        void openCallback();
+        void failedCallback(int error);
+        void imageReadyCallback(Image latestImage);
+    }
+
+    private ArrayList<CameraCallback> cameraCallbacks = new ArrayList<CameraCallback>();
+
+    // Add callbacks
+    public void addCallbacks(CameraCallback callback) {
+        cameraCallbacks.add(callback);
+    }
+
+
+    /// --------------------------------------------------------------------------- ///
+    /// Callbacks ///
+    /// --------------------------------------------------------------------------- ///
+
+    private Telemetry.Item ImageAcquired;
+
+    // Listener for when new images are ready
+    private final ImageReader.OnImageAvailableListener imageReaderListener = new ImageReader.OnImageAvailableListener() {
+        public void onImageAvailable(ImageReader imageReader) {
+            Image latestImage = imageReader.acquireLatestImage();
+            if (ImageAcquired == null){
+                ImageAcquired = telemetry.addData("Image Acquired","");
+            }
+            ImageAcquired.setValue(latestImage.getTimestamp());
+            telemetry.update();
+
+            for (CameraCallback callback: cameraCallbacks) {
+                callback.imageReadyCallback(latestImage);
+            }
+        }
+    };
+
+    /// --------------------------------------------------------------------------- ///
+
+    // Callback for camera open
+    private final CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {
+        @Override
+        public void onOpened(@NonNull CameraDevice openCameraDevice) {
+            cameraDevice = openCameraDevice;
+            telemetry.addData("CameraOpened", "successfully opened camera! " + cameraDevice.getId());
+            telemetry.update();
+            System.out.print("Successfully Opened Camera. ID: " + cameraDevice.getId());
+
+
+            try {
+                CaptureRequest.Builder captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+                captureRequestBuilder.addTarget(imageSurface);
+                List<Surface> surfaceList = new ArrayList<Surface>();
+                surfaceList.add(imageSurface);
+                //cameraDevice.createCaptureSession(surfaceList, imageReaderListener, null);
+            } catch (CameraAccessException exception) {
+                telemetry.addData("Failed", "CameraAccessException Exception");
+                telemetry.addData("Failed Creating Capture Session or Capture Session Builder", exception);
+                telemetry.update();
+                exception.printStackTrace();
+                return;
+            }
+
+            for (CameraCallback callback: cameraCallbacks) {
+                callback.openCallback();
+            }
+        }
+
+        @Override
+        public void onDisconnected(CameraDevice cameraDevice) {
+            telemetry.addData("CameraDisconnected", "camera has been disconnected! " + cameraDevice.getId());
+            telemetry.update();
+            System.out.print("CAMERA DISCONNECTED! ID: " + cameraDevice.getId());
+            // TODO: Implement reconnection!
+
+            for (CameraCallback callback: cameraCallbacks) {
+                callback.failedCallback(-1);
+            }
+        }
+
+        @Override
+        public void onError(CameraDevice cameraDevice, int error) {
+            telemetry.addData("CameraError", "Error has occurred on camera! " + cameraDevice.getId());
+            telemetry.addData("CameraError Code", error);
+            telemetry.update();
+            System.out.print("ERROR ON CAMERA! ID: " + cameraDevice.getId());
+            for (CameraCallback callback: cameraCallbacks) {
+                callback.failedCallback(error);
+            }
+        }
+    };
+
+    /// --------------------------------------------------------------------------- ///
+    /// Utils ///
+    /// --------------------------------------------------------------------------- ///
+
+    static class CompareSizesByArea implements Comparator<Size> {
+
+        @Override
+        public int compare(Size lhs, Size rhs) {
+            // We cast here to ensure the multiplications won't overflow
+            return Long.signum((long) lhs.getWidth() * lhs.getHeight() -
+                    (long) rhs.getWidth() * rhs.getHeight());
+        }
+
+    }
 
 }

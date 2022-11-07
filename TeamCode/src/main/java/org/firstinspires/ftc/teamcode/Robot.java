@@ -1,12 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.content.Context;
-import android.os.Looper;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.sensor.Camera;
+import org.firstinspires.ftc.teamcode.sensor.CameraController;
 
 @TeleOp(name = "Main")
 public class Robot extends LinearOpMode {
@@ -22,6 +21,8 @@ public class Robot extends LinearOpMode {
     public native int initCameraAwareness();
 
     public void runOpMode() throws InterruptedException {
+
+        telemetry.setAutoClear(false);
         appContext = hardwareMap.appContext;
 
 
@@ -31,13 +32,21 @@ public class Robot extends LinearOpMode {
 
         telemetry.addData("cameraAwareness: ", initCameraAwareness());
         telemetry.update();
-        waitForStart();
-        Camera cameraInstance = new Camera();
 
+        waitForStart();
+
+        telemetry.clear();
 
         telemetry.addData("Starting", "Camera Instance");
         telemetry.update();
-        boolean result = cameraInstance.init(appContext, telemetry);
+
+        CameraController cameraController = new CameraController();
+        boolean result = cameraController.init(appContext, telemetry);
+        telemetry.addData("Result", result);
+        telemetry.update();
+
+
+
         while (!isStopRequested()) {
 
         }
