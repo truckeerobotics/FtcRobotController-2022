@@ -11,7 +11,7 @@ Java_org_firstinspires_ftc_teamcode_Robot_initSignalSleeveDetection(JNIEnv *env,
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_org_firstinspires_ftc_teamcode_Robot_getSleeveLevel(JNIEnv *env, jobject obj, jfloatArray bufferY, jfloatArray bufferU, jfloatArray bufferV) {
+Java_org_firstinspires_ftc_teamcode_Robot_getSleeveLevel(JNIEnv *env, jobject obj) {
     return 0;
 }
 
