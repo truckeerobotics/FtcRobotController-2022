@@ -5,15 +5,15 @@
 #ifndef FTCROBOTCONTROLLER_2022_CAMERA_H
 #define FTCROBOTCONTROLLER_2022_CAMERA_H
 
-#include "cameracontroller.h"
 #include <jni.h>
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/c/c_api.h"
 
+extern "C" JNIEXPORT void JNICALL
+Java_org_firstinspires_ftc_teamcode_Robot_initSignalSleeveDetection(JNIEnv *env, jobject obj);
+
 extern "C" JNIEXPORT jint JNICALL
-Java_org_firstinspires_ftc_teamcode_Robot_initCameraAwareness(JNIEnv *env, jobject obj);
-
-
+Java_org_firstinspires_ftc_teamcode_Robot_getSleeveLevel(JNIEnv *env, jobject obj, jfloatArray bufferY, jfloatArray bufferU, jfloatArray bufferV);
 
 #endif //FTCROBOTCONTROLLER_2022_CAMERA_H
 

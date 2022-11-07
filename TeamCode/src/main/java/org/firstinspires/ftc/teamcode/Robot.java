@@ -15,10 +15,11 @@ public class Robot extends LinearOpMode {
     Context appContext;
 
     static {
-        System.loadLibrary("cameraAwareness");
+        System.loadLibrary("Nova");
     }
 //
-    public native int initCameraAwareness();
+    public native void initSignalSleeveDetection();
+    public native int getSleeveLevel(float[] bufferY, float[] bufferU, float[] bufferV);
 
     public void runOpMode() throws InterruptedException {
 
@@ -30,9 +31,6 @@ public class Robot extends LinearOpMode {
         telemetry.addData("before start", "prepare for death");
         telemetry.update();
 
-        telemetry.addData("cameraAwareness: ", initCameraAwareness());
-        telemetry.update();
-
         waitForStart();
 
         telemetry.clear();
@@ -42,6 +40,8 @@ public class Robot extends LinearOpMode {
 
         CameraController cameraController = new CameraController();
         boolean result = cameraController.init(appContext, telemetry);
+
+
         telemetry.addData("Result", result);
         telemetry.update();
 
