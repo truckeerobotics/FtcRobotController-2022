@@ -30,6 +30,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+
+
+/// External Methods: addCallbacks and getLatestImage
+
 public class Camera {
 
     int IMAGE_FORMAT = ImageFormat.YUV_420_888;
@@ -42,7 +46,6 @@ public class Camera {
     private String name;
     private CameraDevice cameraDevice;
     private CaptureRequest.Builder captureSessionRequestBuilder;
-
 
     private Telemetry telemetry;
     private CameraManager cameraManager;
@@ -117,8 +120,19 @@ public class Camera {
 
         telemetry.addData("Finished Camera Init", "Success?");
         telemetry.update();
-
     }
+
+    /// --------------------------------------------------------------------------- ///
+    /// Functions ///
+    /// --------------------------------------------------------------------------- ///
+
+    public Image getLatestImage() {
+        return imageReader.acquireLatestImage();
+    }
+
+    /// --------------------------------------------------------------------------- ///
+    /// Callbacks ///
+    /// --------------------------------------------------------------------------- ///
 
     // Implement this for a callback
     interface CameraCallback {
@@ -134,11 +148,6 @@ public class Camera {
         cameraCallbacks.add(callback);
     }
 
-
-    /// --------------------------------------------------------------------------- ///
-    /// Callbacks ///
-    /// --------------------------------------------------------------------------- ///
-
     private Telemetry.Item ImageAcquired;
 
     // Listener for when new images are ready
@@ -146,7 +155,7 @@ public class Camera {
         public void onImageAvailable(ImageReader imageReader) {
             Image latestImage = imageReader.acquireLatestImage();
             if (ImageAcquired == null){
-                ImageAcquired = telemetry.addData("Image Acquired","NULL");
+                ImageAcquired = telemetry.addData("New Image Acquired At","NULL");
             }
             ImageAcquired.setValue(latestImage.getTimestamp());
             telemetry.update();
@@ -162,12 +171,13 @@ public class Camera {
         public void onConfigureFailed(CameraCaptureSession captureSession) {
             telemetry.addData("Capture", "Session Configure Failed!");
             telemetry.update();
+            Log.i("Capture", "Session Configure Failed!");
         }
         @Override public void onConfigured(CameraCaptureSession captureSession) {
             telemetry.addData("Capture", "Session Configured!");
             telemetry.update();
             try {
-                captureSession.capture(captureSessionRequestBuilder.build(), null, threadHandler);
+                captureSession.setRepeatingRequest(captureSessionRequestBuilder.build(), null, threadHandler);
             } catch (CameraAccessException exception) {
                 telemetry.addData("Failed", "CameraAccessException Exception");
                 telemetry.addData("Failed to Start Capture!", exception);
