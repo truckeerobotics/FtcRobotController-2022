@@ -20,6 +20,7 @@ public class Robot extends LinearOpMode {
 //
     public native void initSignalSleeveDetection();
     public native int getSleeveLevel(float[] bufferY, float[] bufferU, float[] bufferV);
+    public native void passImageBuffers(float[] bufferY, float[] bufferU, float[] bufferV);
 
     public void runOpMode() throws InterruptedException {
 
@@ -40,6 +41,8 @@ public class Robot extends LinearOpMode {
 
         CameraController cameraController = new CameraController();
         boolean result = cameraController.init(appContext, telemetry);
+
+
 
 
         telemetry.addData("Result", result);
