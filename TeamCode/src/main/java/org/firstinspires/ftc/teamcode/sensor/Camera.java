@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
@@ -40,13 +41,17 @@ public class Camera {
     private Size maxImageSize;
     private String name;
     private CameraDevice cameraDevice;
+    private CaptureRequest.Builder captureSessionRequestBuilder;
+
 
     private Telemetry telemetry;
     private CameraManager cameraManager;
+    private Handler threadHandler;
 
     public Camera(String cameraId, String name, CameraManager cameraManager, Telemetry opmodeTelemetry, Context appContext, Handler threadHandler) {
         this.telemetry = opmodeTelemetry;
         this.cameraManager = cameraManager;
+        this.threadHandler = threadHandler;
         this.name = name;
 
         try {
@@ -58,6 +63,32 @@ public class Camera {
             exception.printStackTrace();
             return;
         }
+
+        //-------------------------------------------------//
+
+        StreamConfigurationMap cameraStreamConfigurationMap = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+
+        telemetry.addData("Log", "Getting biggest output size");
+        telemetry.update();
+
+        // Compares sizes and get biggest camera can output (by area)
+        Size cameraMaxOutputSize = Collections.max(Arrays.asList(cameraStreamConfigurationMap.getOutputSizes(IMAGE_FORMAT)), new CompareSizesByArea());
+
+        telemetry.addData("Log", "Got biggest output size");
+        telemetry.update();
+
+        ImageReader imageReader = ImageReader.newInstance(cameraMaxOutputSize.getWidth(), cameraMaxOutputSize.getHeight(), IMAGE_FORMAT, 1);
+        imageReader.setOnImageAvailableListener(imageReaderListener, threadHandler);
+
+        Surface imageSurface = imageReader.getSurface();
+
+        telemetry.addData("Is NULL?!", imageSurface == null);
+        telemetry.update();
+
+        this.imageSurface = imageSurface;
+        this.maxImageSize = cameraMaxOutputSize;
+        this.imageReader = imageReader;
+        this.streamConfigurationMap = cameraStreamConfigurationMap;
 
         //-------------------------------------------------//
 
@@ -81,29 +112,6 @@ public class Camera {
             telemetry.update();
             return;
         }
-
-        //-------------------------------------------------//
-
-        StreamConfigurationMap cameraStreamConfigurationMap = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-
-        telemetry.addData("Log", "Getting biggest output size");
-        telemetry.update();
-
-        // Compares sizes and get biggest camera can output (by area)
-        Size cameraMaxOutputSize = Collections.max(Arrays.asList(cameraStreamConfigurationMap.getOutputSizes(IMAGE_FORMAT)), new CompareSizesByArea());
-
-        telemetry.addData("Log", "Got biggest output size");
-        telemetry.update();
-
-        ImageReader imageReader = ImageReader.newInstance(cameraMaxOutputSize.getWidth(), cameraMaxOutputSize.getHeight(), IMAGE_FORMAT, 1);
-        imageReader.setOnImageAvailableListener(imageReaderListener, threadHandler);
-
-        Surface imageSurface = imageReader.getSurface();
-
-        this.imageSurface = imageSurface;
-        this.maxImageSize = cameraMaxOutputSize;
-        this.imageReader = imageReader;
-        this.streamConfigurationMap = cameraStreamConfigurationMap;
 
         //-------------------------------------------------//
 
@@ -138,7 +146,7 @@ public class Camera {
         public void onImageAvailable(ImageReader imageReader) {
             Image latestImage = imageReader.acquireLatestImage();
             if (ImageAcquired == null){
-                ImageAcquired = telemetry.addData("Image Acquired","");
+                ImageAcquired = telemetry.addData("Image Acquired","NULL");
             }
             ImageAcquired.setValue(latestImage.getTimestamp());
             telemetry.update();
@@ -146,6 +154,27 @@ public class Camera {
             for (CameraCallback callback: cameraCallbacks) {
                 callback.imageReadyCallback(latestImage);
             }
+        }
+    };
+
+    private CameraCaptureSession.StateCallback captureStateCallback = new CameraCaptureSession.StateCallback(){
+        @Override
+        public void onConfigureFailed(CameraCaptureSession captureSession) {
+            telemetry.addData("Capture", "Session Configure Failed!");
+            telemetry.update();
+        }
+        @Override public void onConfigured(CameraCaptureSession captureSession) {
+            telemetry.addData("Capture", "Session Configured!");
+            telemetry.update();
+            try {
+                captureSession.capture(captureSessionRequestBuilder.build(), null, threadHandler);
+            } catch (CameraAccessException exception) {
+                telemetry.addData("Failed", "CameraAccessException Exception");
+                telemetry.addData("Failed to Start Capture!", exception);
+                telemetry.update();
+                exception.printStackTrace();
+            }
+
         }
     };
 
@@ -160,13 +189,17 @@ public class Camera {
             telemetry.update();
             System.out.print("Successfully Opened Camera. ID: " + cameraDevice.getId());
 
-
             try {
                 CaptureRequest.Builder captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
                 captureRequestBuilder.addTarget(imageSurface);
                 List<Surface> surfaceList = new ArrayList<Surface>();
                 surfaceList.add(imageSurface);
-                //cameraDevice.createCaptureSession(surfaceList, imageReaderListener, null);
+                Log.i("Image Surface", imageSurface.toString());
+                cameraDevice.createCaptureSession(surfaceList, captureStateCallback, threadHandler);
+                captureSessionRequestBuilder = captureRequestBuilder;
+
+                telemetry.addData("Log", "Created capture session");
+                telemetry.update();
             } catch (CameraAccessException exception) {
                 telemetry.addData("Failed", "CameraAccessException Exception");
                 telemetry.addData("Failed Creating Capture Session or Capture Session Builder", exception);
