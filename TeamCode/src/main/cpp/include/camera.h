@@ -9,6 +9,9 @@
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/c/c_api.h"
 
+float* imageBufferY;
+float* imageBufferU;
+float* imageBufferV;
 
 extern "C" JNIEXPORT void JNICALL
 Java_org_firstinspires_ftc_teamcode_Robot_passImageBuffers(JNIEnv *env, jobject obj, jfloatArray bufferY, jfloatArray bufferU, jfloatArray bufferV);
