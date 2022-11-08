@@ -39,8 +39,8 @@ public class CameraController {
     // Since we are not in java 9 creating the map is a bit more ugly
     private static HashMap<String, String> createNameMap() {
         HashMap<String,String> cameraNameMap = new HashMap<String,String>();
-        cameraNameMap.put("0", "Front Camera");
-        cameraNameMap.put("1", "Back Camera");
+        cameraNameMap.put("Front Camera", "0");
+        cameraNameMap.put("Back Camera", "1");
         return cameraNameMap;
     }
 
@@ -105,4 +105,12 @@ public class CameraController {
         return true;
     }
 
+    public Camera getCameraByName(String cameraName) {
+        String cameraId = cameraNames.get(cameraName);
+        if (cameraId != null && cameras.get(cameraId) != null){
+            return cameras.get(cameraId);
+        } else {
+            throw new RuntimeException("Camera of such a name does not exist");
+        }
+    }
 }
