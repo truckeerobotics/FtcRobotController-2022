@@ -6,12 +6,7 @@
 #define FTCROBOTCONTROLLER_2022_SIGNALSLEEVEDETECTION_H
 
 #include <numeric>
-
-struct YUV{
-    int y;
-    int u;
-    int v;
-};
+#include <jni.h>
 
 
 struct SleeveDetectionResult{
@@ -37,9 +32,9 @@ private:
 public:
     SignalSleeveDetection(int x, int y, int width, int height);
 
-    int checkBounds(float x, float y);
+    int checkBounds(float* x, float* y);
 
-    SleeveDetectionResult detectSignalLevel(float yBuffer[], float uBuffer[], float vBuffer[]);
+    SleeveDetectionResult detectSignalLevel(float* yBuffer[], float* uBuffer[], float* vBuffer[]);
 };
 
 

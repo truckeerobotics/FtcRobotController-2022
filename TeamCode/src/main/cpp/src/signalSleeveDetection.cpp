@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include "../include/signalSleeveDetection.h"
+
 SignalSleeveDetection::SignalSleeveDetection(int x, int y, int width, int height){
     this->x = x;
     this->y = y;
@@ -11,7 +12,7 @@ SignalSleeveDetection::SignalSleeveDetection(int x, int y, int width, int height
     this->height = height;
 }
 
-int SignalSleeveDetection::checkBounds(float x, float y){
+int SignalSleeveDetection::checkBounds(float* x, float* y){
     float distance[3] = {0,0,0};
     for(int i=0; i<3; i++){
         distance[i] = ((pow((x - y), 2) + pow((COLORS[i][0], COLORS[i][1]), 2)));
@@ -19,11 +20,12 @@ int SignalSleeveDetection::checkBounds(float x, float y){
     return std::distance(distance, std::min_element(distance, distance + sizeof(distance) / sizeof(float)));
 }
 
-SleeveDetectionResult SignalSleeveDetection::detectSignalLevel(float yBuffer[], float uBuffer[], float vBuffer[]){
+SleeveDetectionResult SignalSleeveDetection::detectSignalLevel(float* yBuffer[], float* uBuffer[], float* vBuffer[]){
     // Count up all the pixels within the bounds
     int pixelCounts[3] = {0,0,0};
     for(int i=START; i<END; i++){
         //thing
+        if(yBuffer[i] > )
         pixelCounts[checkBounds(uBuffer[i], vBuffer[i])]++;
         if(i != 0 && i % width == 0){
             i += MAX_WIDTH - width + x;
