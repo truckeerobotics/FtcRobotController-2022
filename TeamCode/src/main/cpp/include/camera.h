@@ -9,6 +9,8 @@
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/c/c_api.h"
 
+float* convertJavaFloatArray(jfloatArray javaFloatArray, JNIEnv *env);
+
 float* imageBufferY;
 float* imageBufferU;
 float* imageBufferV;

@@ -136,7 +136,7 @@ public class Camera {
     /// --------------------------------------------------------------------------- ///
 
     // Implement this for a callback
-    interface CameraCallback {
+    public interface CameraCallback {
         void openCallback();
         void failedCallback(int error);
         void imageReadyCallback(Image latestImage);
@@ -162,10 +162,14 @@ public class Camera {
             telemetry.addData("Image", "New Image has been collected");
             telemetry.update();
 
+            telemetry.addData("Callback","Prep");
             for (CameraCallback callback: cameraCallbacks) {
+                telemetry.addData("Callback","Calling callback");
                 callback.imageReadyCallback(latestImage);
             }
-            //latestImage.close();
+            telemetry.addData("Callback","Finish callback");
+            telemetry.update();
+            latestImage.close();
         }
     };
 
