@@ -36,7 +36,6 @@ public class Robot2 {
             Driver driver = new Driver(opmode);
             driver.run();
         } else {
-            opmode.waitForStart();
             Autonomous auto = new Autonomous(opmode);
             if (type.equals("AutoBlueLeft")) {
                 auto.blueLeft();
@@ -46,6 +45,8 @@ public class Robot2 {
                 auto.redLeft();
             } else if (type.equals("AutoRedRight")) {
                 auto.redRight();
+            }else if(type.equals("Camera")){
+                auto.camera();
             }
         }
     }
