@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Robot2;
 
-@TeleOp(name = "Main Driver Mode")
+@TeleOp(name = "Robot go brrrrr (This Drives robot!! Such wow!!)")
 public class MainDriverOpMode extends LinearOpMode{
     public void runOpMode() throws InterruptedException{
         Robot2 robot = new Robot2("Driver", this);
