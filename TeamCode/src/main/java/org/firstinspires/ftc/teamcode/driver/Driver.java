@@ -49,7 +49,7 @@ public class Driver {
         armLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
         coneHook.setPosition(0);
-        armSwing.setPosition(0);
+        armSwing.setPosition(0.5);
 
 
 
@@ -67,25 +67,20 @@ public class Driver {
             */
 
             if(input.onPush(opmode.gamepad2.x, "controller2ButtonX")) {
-//                toggle = !toggle;
-//                if (toggle) {
-//                    hookPos = 0;
-//                } else {
-//                    hookPos = 0.3;
-//                }
-                swingPos -= 0.05;
-            }
-
-            if(input.onPush(opmode.gamepad2.b, "controller2ButtonB")){
-                swingPos += 0.05;
+                toggle = !toggle;
+                if (toggle) {
+                    hookPos = 0;
+                } else {
+                    hookPos = 0.3;
+                }
             }
 
             if(input.onPush(opmode.gamepad2.y, "controller2ButtonY")){
                 toggle2 = !toggle2;
                 if (toggle2) {
-                    swingPos = 0;
+                    swingPos = 0.75;
                 } else {
-                    swingPos = 0.3;
+                    swingPos = 0.05;
                 }
             }
 
@@ -96,52 +91,10 @@ public class Driver {
                 armRight.setPower(opmode.gamepad2.left_stick_y);
             }
 
-            double y = yCurrent;
-            double x = xCurrent;
-            double rx = rxCurrent;
+            double x = -opmode.gamepad1.left_stick_x;
+            double y = -opmode.gamepad1.left_stick_y;
+            double rx = opmode.gamepad1.right_stick_x;
 
-
-
-
-            yTarget = -opmode.gamepad1.left_stick_y * LateralSpeed; // Remember, this is reversed!
-            xTarget = -opmode.gamepad1.left_stick_x * StrafeSpeed * 1.1; // Counteract imperfect strafing
-            rxTarget = -opmode.gamepad1.right_stick_x * RotationalSpeed;
-
-            // If difference cutoff is not reached, then move current/actual movement to target movement.
-            if (!(Math.abs(yTarget - yCurrent) < drivingPowerDifferenceCutoff)) {
-                if (yTarget > yCurrent) {
-                    yCurrent += drivingPowerForwardDelta;
-                } else {
-                    yCurrent -= drivingPowerBackwardDelta;
-                }
-            } else {
-                yCurrent = yTarget;
-            }
-
-            if (!(Math.abs(xTarget - xCurrent) < drivingPowerDifferenceCutoff)) {
-                if (xTarget > xCurrent) {
-                    xCurrent += drivingPowerStrafeDelta;
-                } else {
-                    xCurrent -= drivingPowerStrafeDelta;
-                }
-            } else {
-                xCurrent = xTarget;
-            }
-
-            if (!(Math.abs(rxTarget - rxCurrent) < drivingPowerDifferenceCutoff)) {
-                if (rxTarget > rxCurrent) {
-                    rxCurrent += drivingPowerRotationDelta;
-                } else {
-                    rxCurrent -= drivingPowerRotationDelta;
-                }
-            } else {
-                rxCurrent = rxTarget;
-            }
-            // Take things from smart/smooth driving and implement the intended axial changes.
-
-            // Denominator is the largest motor power (absolute value) or 1
-            // This ensures all the powers maintain the same ratio, but only when
-            // at least one is out of the range [-1, 1]
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
             double frontLeftPower = (y + x + rx) / denominator;
             double backLeftPower = (y - x + rx) / denominator;
@@ -157,6 +110,7 @@ public class Driver {
             armSwing.setPosition(swingPos);
 
             opmode.telemetry.addData("swingPos: ", swingPos);
+            opmode.telemetry.addData("hookPos: ", hookPos);
             opmode.telemetry.addData("Hook: ", toggle);
             opmode.telemetry.addData("Swing: ", toggle2);
 

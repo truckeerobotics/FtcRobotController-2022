@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.movement;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.sensor.Encoder;
 import org.firstinspires.ftc.teamcode.other.Vector2;
@@ -11,50 +12,76 @@ public class Movement {
 
     private HardwareMap hardware;
     private LinearOpMode opmode;
-
-    public DcMotor leftMotor;
-    public DcMotor rightMotor;
+    public DcMotor motorFrontLeft;
+    public DcMotor motorBackLeft;
+    public DcMotor motorFrontRight;
+    public DcMotor motorBackRight;
+    public DcMotor armLeft;
+    public DcMotor armRight;
+    public Servo coneHook;
+    public Servo armSwing;
 
     public Movement(LinearOpMode opmode){
         this.hardware = opmode.hardwareMap;
         this.opmode = opmode;
-        leftMotor = hardware.dcMotor.get("left_drive");
-        rightMotor = hardware.dcMotor.get("right_drive");
+        motorFrontLeft = opmode.hardwareMap.dcMotor.get("motorFrontLeft");
+        motorBackLeft = opmode.hardwareMap.dcMotor.get("motorBackLeft");
+        motorFrontRight = opmode.hardwareMap.dcMotor.get("motorFrontRight");
+        motorBackRight = opmode.hardwareMap.dcMotor.get("motorBackRight");
+        armLeft = opmode.hardwareMap.dcMotor.get("armLeft");
+        armRight = opmode.hardwareMap.dcMotor.get("armRight");
+        coneHook = opmode.hardwareMap.servo.get("coneHook");
+        armSwing = opmode.hardwareMap.servo.get("armSwing");
+
+        motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
+        motorBackRight.setDirection(DcMotor.Direction.REVERSE);
     }
 
     public void driveForward(double speed){
-        leftMotor.setPower(speed);
-        rightMotor.setPower(-speed);
+        motorBackLeft.setPower(speed);
+        motorBackRight.setPower(speed);
+        motorFrontLeft.setPower(speed);
+        motorFrontRight.setPower(speed);
     }
 
     public static final int LEFT = 0;
     public static final int RIGHT = 1;
     public void turn(int direction, double speed){
         if(direction == LEFT){
-            rightMotor.setPower(0);
-            leftMotor.setPower(speed);
+            //turn here
         }else{
-            rightMotor.setPower(speed);
-            leftMotor.setPower(0);
+            //turn here
         }
     }
 
     public void stop(){
-        leftMotor.setPower(0);
-        rightMotor.setPower(0);
+        motorBackLeft.setPower(0);
+        motorFrontRight.setPower(0);
+        motorFrontLeft.setPower(0);
+        motorFrontRight.setPower(0);
     }
 
-    public void driveInches(int inches, double speed, Encoder leftEncoder, Encoder rightEncoder){
-        while(-leftEncoder.getDifference() < inches && rightEncoder.getDifference() < inches && !opmode.isStopRequested()) {
+    private Boolean checkEncoders(Encoder[] encoders, int inches){
+        Boolean works = true;
+        for(int i=0; i<encoders.length; i++){
+            if(encoders[i].getDifference() > inches){
+                works = false;
+            }
+        }
+        return works;
+    }
+
+    public void driveInches(int inches, double speed, Encoder[] encoders){
+        while(checkEncoders(encoders, inches) && !opmode.isStopRequested()) {
             driveForward(speed);
-            opmode.telemetry.addData("left dif", -leftEncoder.getDifference());
-            opmode.telemetry.addData("right dif", rightEncoder.getDifference());
-            opmode.telemetry.addData("left enc", leftEncoder);
-            opmode.telemetry.addData("right enc", rightEncoder);
-            opmode.telemetry.addData("stop req", opmode.isStopRequested());
-            opmode.telemetry.addData("inches", inches);
-            opmode.telemetry.addData("uhg", leftEncoder.getDifference() < inches && rightEncoder.getDifference() < inches && !opmode.isStopRequested());
-            opmode.telemetry.update();
+//            opmode.telemetry.addData("left dif", -leftEncoder.getDifference());
+//            opmode.telemetry.addData("right dif", rightEncoder.getDifference());
+//            opmode.telemetry.addData("left enc", leftEncoder);
+//            opmode.telemetry.addData("right enc", rightEncoder);
+//            opmode.telemetry.addData("stop req", opmode.isStopRequested());
+//            opmode.telemetry.addData("inches", inches);
+//            opmode.telemetry.addData("uhg", leftEncoder.getDifference() < inches && rightEncoder.getDifference() < inches && !opmode.isStopRequested());
+//            opmode.telemetry.update();
         }
     }
 

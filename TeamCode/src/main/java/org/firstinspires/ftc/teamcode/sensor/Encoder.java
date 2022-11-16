@@ -8,7 +8,7 @@ public class Encoder {
 
     private static final double COUNTS_PER_MOTOR_REV = 4;
     private static final double DRIVE_GEAR_REDUCTION = 0.157;
-    private static final double WHEEL_DIAMETER_INCHES = 3.5;
+    private static final double WHEEL_DIAMETER_INCHES = 3;
     public static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
     
     public Encoder(DcMotor motor){
