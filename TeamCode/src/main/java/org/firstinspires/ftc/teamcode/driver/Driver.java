@@ -117,4 +117,44 @@ public class Driver {
             opmode.telemetry.update();
         }
     }
+    public void runJV(){
+        DcMotor motorFrontLeft = opmode.hardwareMap.dcMotor.get("motorFrontLeft");
+        DcMotor motorBackLeft = opmode.hardwareMap.dcMotor.get("motorBackLeft");
+        DcMotor motorFrontRight = opmode.hardwareMap.dcMotor.get("motorFrontRight");
+        DcMotor motorBackRight = opmode.hardwareMap.dcMotor.get("motorBackRight");
+
+        motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
+        motorBackRight.setDirection(DcMotor.Direction.REVERSE);
+
+        opmode.waitForStart();
+
+        DriverInput input = new DriverInput(opmode.gamepad1, opmode.gamepad2);
+        Boolean toggle = false;
+        Boolean toggle2 = false;
+        double swingPos = 0;
+        double hookPos = 0;
+        while (!opmode.isStopRequested()) {
+            double x = -opmode.gamepad1.left_stick_x;
+            double y = -opmode.gamepad1.left_stick_y;
+            double rx = opmode.gamepad1.right_stick_x;
+
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            double frontLeftPower = (y + x + rx) / denominator;
+            double backLeftPower = (y - x + rx) / denominator;
+            double frontRightPower = (y - x - rx) / denominator;
+            double backRightPower = (y + x - rx) / denominator;
+
+            motorFrontLeft.setPower(frontLeftPower);
+            motorBackLeft.setPower(backLeftPower);
+            motorFrontRight.setPower(frontRightPower);
+            motorBackRight.setPower(backRightPower);
+
+            opmode.telemetry.addData("swingPos: ", swingPos);
+            opmode.telemetry.addData("hookPos: ", hookPos);
+            opmode.telemetry.addData("Hook: ", toggle);
+            opmode.telemetry.addData("Swing: ", toggle2);
+
+            opmode.telemetry.update();
+        }
+    }
 }

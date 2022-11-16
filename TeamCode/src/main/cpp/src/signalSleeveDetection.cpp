@@ -2,8 +2,9 @@
 // Created by Alex on 11/6/22.
 //
 
-#include <algorithm>
 #include "../include/signalSleeveDetection.h"
+#include "../include/imageBuffers.h"
+
 
 SignalSleeveDetection::SignalSleeveDetection(int x, int y, int width, int height){
     this->x = x;
@@ -12,7 +13,7 @@ SignalSleeveDetection::SignalSleeveDetection(int x, int y, int width, int height
     this->height = height;
 }
 
-int SignalSleeveDetection::checkBounds(float* x, float* y){
+int SignalSleeveDetection::checkBounds(uint8_t x, uint8_t y){
     float distance[3] = {0,0,0};
     for(int i=0; i<3; i++){
         distance[i] = ((pow((x - y), 2) + pow((COLORS[i][0], COLORS[i][1]), 2)));
@@ -20,13 +21,15 @@ int SignalSleeveDetection::checkBounds(float* x, float* y){
     return std::distance(distance, std::min_element(distance, distance + sizeof(distance) / sizeof(float)));
 }
 
-SleeveDetectionResult SignalSleeveDetection::detectSignalLevel(float* yBuffer[], float* uBuffer[], float* vBuffer[]){
+SleeveDetectionResult SignalSleeveDetection::detectSignalLevel(uInt8Buffer yBufferContainer, uInt8Buffer uBufferContainer, uInt8Buffer vBufferContainer){
+    uint8_t* yBuffer = yBufferContainer.data;
+    uint8_t* uBuffer = yBufferContainer.data;
+    uint8_t* vBuffer = yBufferContainer.data;
+
     // Count up all the pixels within the bounds
     int pixelCounts[3] = {0,0,0};
     for(int i=START; i<END; i++){
-        //thing
-        if(yBuffer[i] > )
-        pixelCounts[checkBounds(uBuffer[i], vBuffer[i])]++;
+        pixelCounts[checkBounds(*(uBuffer+i), *(vBuffer+i))]++;
         if(i != 0 && i % width == 0){
             i += MAX_WIDTH - width + x;
         }

@@ -5,18 +5,14 @@
 #ifndef FTCROBOTCONTROLLER_2022_CAMERA_H
 #define FTCROBOTCONTROLLER_2022_CAMERA_H
 
+#include "imageBuffers.h"
 #include <jni.h>
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/c/c_api.h"
-
-float* convertJavaFloatArray(jfloatArray javaFloatArray, JNIEnv *env);
-
-float* imageBufferY;
-float* imageBufferU;
-float* imageBufferV;
+#include "signalSleeveDetection.h"
 
 extern "C" JNIEXPORT void JNICALL
-Java_org_firstinspires_ftc_teamcode_Robot_passImageBuffers(JNIEnv *env, jobject obj, jfloatArray bufferY, jfloatArray bufferU, jfloatArray bufferV);
+Java_org_firstinspires_ftc_teamcode_Robot_passImageBuffers(JNIEnv *env, jobject obj, jbyteArray bufferY, jbyteArray bufferU, jbyteArray bufferV);
 
 extern "C" JNIEXPORT void JNICALL
 Java_org_firstinspires_ftc_teamcode_Robot_initSignalSleeveDetection(JNIEnv *env, jobject obj);
