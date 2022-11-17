@@ -3,11 +3,11 @@ package org.firstinspires.ftc.teamcode.sensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class Encoder {
-    private DcMotor motor = null;
-    private int startingPos = 0;
+    private DcMotor motor;
+    private int startingPos;
 
     private static final double COUNTS_PER_MOTOR_REV = 4;
-    private static final double DRIVE_GEAR_REDUCTION = 0.157;
+    private static final double DRIVE_GEAR_REDUCTION = 0.0922;
     private static final double WHEEL_DIAMETER_INCHES = 3;
     public static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
     
