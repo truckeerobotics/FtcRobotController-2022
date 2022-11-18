@@ -118,10 +118,10 @@ public class Driver {
         }
     }
     public void runJV(){
-        DcMotor motorFrontLeft = opmode.hardwareMap.dcMotor.get("motorFrontLeft");
-        DcMotor motorBackLeft = opmode.hardwareMap.dcMotor.get("motorBackLeft");
-        DcMotor motorFrontRight = opmode.hardwareMap.dcMotor.get("motorFrontRight");
-        DcMotor motorBackRight = opmode.hardwareMap.dcMotor.get("motorBackRight");
+        DcMotor motorFrontLeft = opmode.hardwareMap.dcMotor.get("mFL");
+        DcMotor motorBackLeft = opmode.hardwareMap.dcMotor.get("mBL");
+        DcMotor motorFrontRight = opmode.hardwareMap.dcMotor.get("mFR");
+        DcMotor motorBackRight = opmode.hardwareMap.dcMotor.get("mBR");
 
         motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
         motorBackRight.setDirection(DcMotor.Direction.REVERSE);
@@ -129,14 +129,10 @@ public class Driver {
         opmode.waitForStart();
 
         DriverInput input = new DriverInput(opmode.gamepad1, opmode.gamepad2);
-        Boolean toggle = false;
-        Boolean toggle2 = false;
-        double swingPos = 0;
-        double hookPos = 0;
         while (!opmode.isStopRequested()) {
-            double x = -opmode.gamepad1.left_stick_x;
-            double y = -opmode.gamepad1.left_stick_y;
-            double rx = opmode.gamepad1.right_stick_x;
+            double x = opmode.gamepad1.left_stick_x;
+            double y = opmode.gamepad1.left_stick_y;
+            double rx = -opmode.gamepad1.right_stick_x;
 
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
             double frontLeftPower = (y + x + rx) / denominator;
@@ -149,10 +145,14 @@ public class Driver {
             motorFrontRight.setPower(frontRightPower);
             motorBackRight.setPower(backRightPower);
 
-            opmode.telemetry.addData("swingPos: ", swingPos);
-            opmode.telemetry.addData("hookPos: ", hookPos);
-            opmode.telemetry.addData("Hook: ", toggle);
-            opmode.telemetry.addData("Swing: ", toggle2);
+            opmode.telemetry.addData("X", x);
+            opmode.telemetry.addData("Y", y);
+            opmode.telemetry.addData("RX", rx);
+
+            opmode.telemetry.addData("Front Left Power", frontLeftPower);
+            opmode.telemetry.addData("Back Left Power", backLeftPower);
+            opmode.telemetry.addData("Front Right Power", frontRightPower);
+            opmode.telemetry.addData("Back Right Power", backRightPower);
 
             opmode.telemetry.update();
         }

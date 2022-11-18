@@ -92,6 +92,16 @@ public class Autonomous {
         move.stop();
     }
 
+    public void JVAuto(){
+        ColorSensor colorSensor;
+
+        opmode.waitForStart();
+//        while (opmode.getRuntime() < 3.0) {
+//            move.driveForwardJV(1);
+//        }
+//        move.driveForwardJV(0);
+    }
+
     public Boolean blueLeft(){
         opmode.waitForStart();
         Encoder[] encoderArray = {motorBackLeftEncoder, motorBackRightEncoder, motorFrontLeftEncoder, motorFrontRightEncoder};

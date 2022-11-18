@@ -50,6 +50,8 @@ public class Robot2 {
                 auto.redRight();
             }else if(type.equals("Camera")){
                 auto.camera();
+            }else if(type.equals("JVAuto")){
+                auto.JVAuto();
             }
         }
     }
