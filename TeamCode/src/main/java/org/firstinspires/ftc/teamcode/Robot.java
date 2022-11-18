@@ -2,17 +2,22 @@ package org.firstinspires.ftc.teamcode;
 
 import android.content.Context;
 import android.media.Image;
+import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ReadWriteFile;
 
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.sensor.Camera;
 import org.firstinspires.ftc.teamcode.sensor.CameraController;
 
+import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
-@TeleOp(name = "Main")
+@TeleOp(name = "Camera Main")
 public class Robot extends LinearOpMode {
 
 
@@ -25,7 +30,7 @@ public class Robot extends LinearOpMode {
 //
     public native void initSignalSleeveDetection();
     public native int getSleeveLevel();
-    public native void passImageBuffers(float[] bufferY, float[] bufferU, float[] bufferV);
+    public native void passImageBuffers(byte[] bufferY, byte[] bufferU, byte[] bufferV);
 
     public void runOpMode() throws InterruptedException {
 
@@ -34,7 +39,7 @@ public class Robot extends LinearOpMode {
 
 
 
-        telemetry.addData("before start", "prepare for death");
+        telemetry.addData("before start", "prepare for death!");
         telemetry.update();
 
         waitForStart();
@@ -48,6 +53,8 @@ public class Robot extends LinearOpMode {
         boolean result = cameraController.init(appContext, telemetry);
 
         Camera mainCamera = cameraController.getCameraByName("Front Camera");
+        Image latestImage = mainCamera.getLatestImage();
+        telemetry.addData("is latest image nil?", latestImage == null);
         mainCamera.addCallbacks(cameraCallback);
         telemetry.addData("Result", result);
         telemetry.update();
@@ -68,17 +75,35 @@ public class Robot extends LinearOpMode {
         public void failedCallback(int error) {
 
         };
+        private byte[] planeToByteBuffer(Image.Plane plane) {
+            ByteBuffer byteBuffer = plane.getBuffer();
+            byte[] byteBufferArray = new byte[byteBuffer.remaining()];
+            byteBuffer.get(byteBufferArray);
+            return byteBufferArray;
+        }
         public void imageReadyCallback(Image latestImage) {
-            Image.Plane[] imagePlanes = latestImage.getPlanes();
-            ByteBuffer byteBuffer = imagePlanes[0].getBuffer();
-            FloatBuffer floatBuffer = byteBuffer.asFloatBuffer();
-            float[] floatArray = floatBuffer.array();
-            telemetry.addData("Float Values", floatArray[0]);
-            telemetry.addData("Float Value", floatArray[1]);
-            telemetry.addData("Float Value", floatArray[2]);
-            telemetry.addData("Float Value", floatArray[3]);
-            telemetry.addData("Float Value", floatArray[4]);
+
+            telemetry.addData("Getting buffers", "Indeed");
             telemetry.update();
+            Image.Plane[] imagePlanes = latestImage.getPlanes();
+            byte[] yBuffer = planeToByteBuffer(imagePlanes[0]);
+            byte[] uBuffer = planeToByteBuffer(imagePlanes[1]);
+            byte[] vBuffer = planeToByteBuffer(imagePlanes[2]);
+            passImageBuffers(yBuffer,uBuffer,vBuffer);
+            //getSleeveLevel();
+            telemetry.addData("Reformating image y", "Quite");
+            telemetry.update();
+            String bufferUnsignedInt8 = "";
+            for (int i = 0; i < yBuffer.length; i++) {
+                int unsignedInt8 = yBuffer[i] & 0xFF;
+                bufferUnsignedInt8 += Integer.toString(unsignedInt8) + ",";
+            }
+
+            telemetry.addData("DOING FILE THINGS", "YES");
+            telemetry.update();
+            String filename = "BRIGHTNESS_TEST_FILE.txt";
+            File file = AppUtil.getInstance().getSettingsFile(filename);
+            ReadWriteFile.writeFile(file, bufferUnsignedInt8);
         };
     };
 }

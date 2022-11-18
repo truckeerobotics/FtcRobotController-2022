@@ -1,12 +1,13 @@
 #include "../include/camera.h"
-#include "../include/signalSleeveDetection.h"
 
- float* convertJavaFloatArray(jfloatArray javaFloatArray, JNIEnv *env) {
-    //jfloat* native_input_frame = (*env).GetFloatArrayElements(env, javaFloatArray, NULL);
-}
+
+
 
 extern "C" JNIEXPORT void JNICALL
-Java_org_firstinspires_ftc_teamcode_Robot_passImageBuffers(JNIEnv *env, jobject obj, jfloatArray bufferY, jfloatArray bufferU, jfloatArray bufferV) {
+Java_org_firstinspires_ftc_teamcode_Robot_passImageBuffers(JNIEnv *env, jobject obj, jbyteArray bufferY, jbyteArray bufferU, jbyteArray bufferV) {
+    imageBufferY = getBufferFromJavaByteBuffer(env, bufferY);
+    imageBufferU = getBufferFromJavaByteBuffer(env, bufferU);
+    imageBufferV = getBufferFromJavaByteBuffer(env, bufferV);
 
 }
 

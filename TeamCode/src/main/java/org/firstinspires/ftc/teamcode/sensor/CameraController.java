@@ -76,10 +76,15 @@ public class CameraController {
 
             for (int cameraIndex = 0; cameraIndex < cameraIdCount; cameraIndex++) {
                 String cameraId = cameraIdList[cameraIndex];
-                String cameraName = "";
-                if (cameraNames.containsKey(cameraId)) {
-                    cameraName = cameraNames.get(cameraId);
-                } else {
+                String cameraName = "nilName";
+
+                for (Map.Entry<String, String> entry : cameraNames.entrySet()) {
+                    if (entry.getValue().equals(cameraId)) {
+                        cameraName = entry.getKey();
+                        break;
+                    }
+                }
+                if (cameraName.equals("nilName")) {
                     cameraName = "Unknown" + cameraId;
                 }
                 telemetry.addData("Name", cameraName);

@@ -7,6 +7,9 @@
 
 #include <numeric>
 #include <jni.h>
+#include <algorithm>
+
+#include "camera.h"
 
 
 struct SleeveDetectionResult{
@@ -32,9 +35,9 @@ private:
 public:
     SignalSleeveDetection(int x, int y, int width, int height);
 
-    int checkBounds(float* x, float* y);
+    int checkBounds(uint8_t x, uint8_t y);
 
-    SleeveDetectionResult detectSignalLevel(float* yBuffer[], float* uBuffer[], float* vBuffer[]);
+    SleeveDetectionResult detectSignalLevel(uInt8Buffer yBuffer, uInt8Buffer uBuffer, uInt8Buffer vBuffer);
 };
 
 

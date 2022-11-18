@@ -163,9 +163,13 @@ public class Camera {
             telemetry.update();
 
             telemetry.addData("Callback","Prep");
+            telemetry.update();
             for (CameraCallback callback: cameraCallbacks) {
                 telemetry.addData("Callback","Calling callback");
+                telemetry.update();
                 callback.imageReadyCallback(latestImage);
+                telemetry.addData("Callback", "Finished Calling Callback");
+                telemetry.update();
             }
             telemetry.addData("Callback","Finish callback");
             telemetry.update();
@@ -191,7 +195,8 @@ public class Camera {
             telemetry.addData("Capture", "Session Configured!");
             telemetry.update();
             try {
-                captureSession.setRepeatingRequest(captureSessionRequestBuilder.build(), imageCaptureCallback, threadHandler);
+                //captureSession.setRepeatingRequest(captureSessionRequestBuilder.build(), imageCaptureCallback, threadHandler);
+                captureSession.capture(captureSessionRequestBuilder.build(), imageCaptureCallback, threadHandler);
             } catch (CameraAccessException exception) {
                 telemetry.addData("Failed", "CameraAccessException Exception");
                 telemetry.addData("Failed to Start Capture!", exception);

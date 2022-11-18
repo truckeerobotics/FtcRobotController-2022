@@ -35,6 +35,9 @@ public class Robot2 {
         if(type.equals("Driver")) {
             Driver driver = new Driver(opmode);
             driver.run();
+        } else if(type.equals("DriverJV")) {
+            Driver driver = new Driver(opmode);
+            driver.runJV();
         } else {
             Autonomous auto = new Autonomous(opmode);
             if (type.equals("AutoBlueLeft")) {
