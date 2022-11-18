@@ -79,8 +79,8 @@ public class Autonomous {
         }
 
         opmode.resetRuntime();
+        move.driveInches(10, 0.75, encoderArray);
         while(opmode.getRuntime() < 3 && !opmode.isStopRequested()){
-            move.driveInches(10, 0.75, encoderArray);
             if(highestIndex == 0){
                 move.strafeLeft(0.75);
             }else if(highestIndex == 1){
