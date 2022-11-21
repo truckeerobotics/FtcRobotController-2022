@@ -21,8 +21,19 @@ public class Movement {
     public Servo coneHook;
     public Servo armSwing;
 
-    public Movement(LinearOpMode opmode){
-        this.hardware = opmode.hardwareMap;
+    private Boolean debug;
+
+    public Movement(LinearOpMode opmode) {
+        init(opmode);
+    }
+
+    public Movement(LinearOpMode opmode, Boolean debug){
+        this.debug = debug;
+        init(opmode);
+    }
+
+    private void init(LinearOpMode opmode){
+        hardware = opmode.hardwareMap;
         this.opmode = opmode;
         motorFrontLeft = opmode.hardwareMap.dcMotor.get("motorFrontLeft");
         motorBackLeft = opmode.hardwareMap.dcMotor.get("motorBackLeft");
@@ -65,20 +76,59 @@ public class Movement {
         motorBackLeft.setPower(0);
         motorFrontRight.setPower(0);
         motorFrontLeft.setPower(0);
-        motorFrontRight.setPower(0);
+        motorBackRight.setPower(0);
     }
 
     private Boolean checkEncoders(Encoder[] encoders, int inches){
-        Boolean works = true;
+        Boolean running = true;
+        if(debug){
+            opmode.telemetry.addData("STATUS", "Encoder debug");
+            opmode.telemetry.addData("Target", inches);
+        }
         for(int i=0; i<encoders.length; i++){
             if(encoders[i].getDifference() > inches){
-                works = false;
+                running = false;
+            }
+            if(debug){
+                opmode.telemetry.addData(i + "", encoders[i].getDifference());
             }
         }
-        return works;
+        opmode.telemetry.update();
+        return running;
     }
 
+
+//    private Boolean checkEncoders(Encoder[] encoders, Encoder[] negativeEncoders, int inches){
+//        Boolean running = true;
+//        Boolean negativeRunning = true;
+//        if(debug){
+//            opmode.telemetry.addData("STATUS", "Encoder debug");
+//            opmode.telemetry.addData("Target", inches);
+//        }
+//        for(int i=0; i<encoders.length; i++){
+//            if(encoders[i].getDifference() > inches){
+//                running = false;
+//            }
+//            if(debug){
+//                opmode.telemetry.addData(i + "", encoders[i].getDifference());
+//            }
+//        }
+//        for(int i=0; i<negativeEncoders.length; i++){
+//            if(negativeEncoders[i].getDifference() > -inches){
+//                negativeRunning = false;
+//            }
+//            if(debug){
+//                opmode.telemetry.addData(i + "", negativeEncoders[i].getDifference());
+//            }
+//        }
+//        opmode.telemetry.update();
+//        return running && negativeRunning;
+//    }
+
     public void driveInches(int inches, double speed, Encoder[] encoders){
+        for(int i=0; i<encoders.length; i++){
+            encoders[i].reset();
+        }
         while(checkEncoders(encoders, inches) && !opmode.isStopRequested()) {
             driveForward(speed);
         }
