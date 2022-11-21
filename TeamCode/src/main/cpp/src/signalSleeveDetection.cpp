@@ -5,33 +5,31 @@
 #include "../include/signalSleeveDetection.h"
 #include "../include/imageBuffers.h"
 
+ColorBox::ColorBox(Point center, Size size, Size max) {
 
-SignalSleeveDetection::SignalSleeveDetection(int x, int y, int width, int height){
-    this->x = x;
-    this->y = y;
-    this->width = width;
-    this->height = height;
-}
+};
 
-int SignalSleeveDetection::checkBounds(uint8_t x, uint8_t y){
-    float distance[3] = {0,0,0};
-    for(int i=0; i<3; i++){
-        distance[i] = ((pow((x - y), 2) + pow((COLORS[i][0], COLORS[i][1]), 2)));
-    }
-    return std::distance(distance, std::min_element(distance, distance + sizeof(distance) / sizeof(float)));
+ColorBox::ColorBox() {};
+
+
+int SignalSleeveDetection::getColorType(uint8_t *u, uint8_t *v){
+    return 0;
 }
 
 SleeveDetectionResult SignalSleeveDetection::detectSignalLevel(uInt8Buffer yBufferContainer, uInt8Buffer uBufferContainer, uInt8Buffer vBufferContainer){
     uint8_t* yBuffer = yBufferContainer.data;
-    uint8_t* uBuffer = yBufferContainer.data;
-    uint8_t* vBuffer = yBufferContainer.data;
+    uint8_t* uBuffer = uBufferContainer.data;
+    uint8_t* vBuffer = vBufferContainer.data;
 
-    // Count up all the pixels within the bounds
-    int pixelCounts[3] = {0,0,0};
-    for(int i=START; i<END; i++){
-        pixelCounts[checkBounds(*(uBuffer+i), *(vBuffer+i))]++;
-        if(i != 0 && i % width == 0){
-            i += MAX_WIDTH - width + x;
+    // Count up all the pixels within the bounds of each color
+    // Any not in any color bound counts to #3
+    int pixelCounts[4] = {0,0,0, 0};
+
+    for(int i=startBufferIndex; i<endBufferIndex; i++){
+        int colorType = getColorType(uBuffer+i, vBuffer+i);
+        pixelCounts[colorType]++;
+        if(i != 0 && i % repeatRowBufferIndex == 0){
+            i += addToRepeatRow;
         }
     }
 
@@ -39,14 +37,18 @@ SleeveDetectionResult SignalSleeveDetection::detectSignalLevel(uInt8Buffer yBuff
     // Get percentage of confidence per level
     float levelConfidences[3] = {0,0,0};
     int sum; std::accumulate(pixelCounts, pixelCounts+arraySize, sum);
-    if (sum == 0) { return SleeveDetectionResult(1,0.0f); };
+    if (sum == 0) { return SleeveDetectionResult(0,0.0f); };
     for (int i = 0; i < 3; i++) { levelConfidences[i] =  pixelCounts[i] / sum; }
 
     // Gets the index of the level with the most pixels
     int detectedLevel = std::distance(pixelCounts, std::max_element(pixelCounts, pixelCounts + arraySize));
 
     // Return the level (+1 so it is more human readable) and the confidence that it is that level
-    return SleeveDetectionResult{detectedLevel+1, levelConfidences[detectedLevel]};
+    return SleeveDetectionResult{pixelCounts[2], levelConfidences[detectedLevel]};
+}
+
+SignalSleeveDetection::SignalSleeveDetection(ColorBox *colorBoxes, DetectionZone detectionZone, Size imageSize, int colorBytePerPixel) {
+
 }
 
 SleeveDetectionResult::SleeveDetectionResult(int level, float confidence) {

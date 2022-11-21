@@ -28,7 +28,6 @@ public class Robot extends LinearOpMode {
         System.loadLibrary("Nova");
     }
 //
-    public native void initSignalSleeveDetection();
     public native int getSleeveLevel();
     public native void passImageBuffers(byte[] bufferY, byte[] bufferU, byte[] bufferV);
 
@@ -53,8 +52,6 @@ public class Robot extends LinearOpMode {
         boolean result = cameraController.init(appContext, telemetry);
 
         Camera mainCamera = cameraController.getCameraByName("Front Camera");
-        Image latestImage = mainCamera.getLatestImage();
-        telemetry.addData("is latest image nil?", latestImage == null);
         mainCamera.addCallbacks(cameraCallback);
         telemetry.addData("Result", result);
         telemetry.update();
@@ -64,6 +61,7 @@ public class Robot extends LinearOpMode {
         while (!isStopRequested()) {
 
         }
+        //cameraController.onOpModeStopped();
         telemetry.addData("Finished", "Completed");
         telemetry.update();
     }
@@ -90,15 +88,17 @@ public class Robot extends LinearOpMode {
             byte[] uBuffer = planeToByteBuffer(imagePlanes[1]);
             byte[] vBuffer = planeToByteBuffer(imagePlanes[2]);
             passImageBuffers(yBuffer,uBuffer,vBuffer);
-            //getSleeveLevel();
+            telemetry.addData("SLEVE LEVEL", getSleeveLevel());
             telemetry.addData("Reformating image y", "Quite");
             telemetry.update();
             String bufferUnsignedInt8 = "";
-            for (int i = 0; i < yBuffer.length; i++) {
-                int unsignedInt8 = yBuffer[i] & 0xFF;
-                bufferUnsignedInt8 += Integer.toString(unsignedInt8) + ",";
-            }
+            for (int i = 0; i < 500; i++) {
+                int unsignedInt8y = yBuffer[i] & 0xFF;
+                int unsignedInt8u = uBuffer[i] & 0xFF;
+                int unsignedInt8v = vBuffer[i] & 0xFF;
+                bufferUnsignedInt8 += "(" + Integer.toString(unsignedInt8y) + ";" + Integer.toString(unsignedInt8u) + ";" + Integer.toString(unsignedInt8v) + ";),";
 
+            }
             telemetry.addData("DOING FILE THINGS", "YES");
             telemetry.update();
             String filename = "BRIGHTNESS_TEST_FILE.txt";

@@ -118,4 +118,8 @@ public class CameraController {
             throw new RuntimeException("Camera of such a name does not exist");
         }
     }
+
+//    public void onOpModeStopped() {
+//        cameraThreadHandler.getLooper().quit();
+//    }
 }

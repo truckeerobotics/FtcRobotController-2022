@@ -12,6 +12,34 @@
 #include "camera.h"
 
 
+struct Point {
+    int x;
+    int y;
+};
+
+struct Size {
+    int x;
+    int y;
+};
+
+struct DetectionZone {
+    Point start;
+    Point end;
+};
+
+// Color bounds for YUV (Y: Brightness, U & V: Color). xy = uv
+struct ColorBox {
+    int uStart;
+    int uEnd;
+    int vStart;
+    int vEnd;
+    int yMax;
+    int yMin;
+
+    ColorBox(Point center, Size size, Size max);
+    ColorBox();
+};
+
 struct SleeveDetectionResult{
     SleeveDetectionResult(int level, float confidence);
 
@@ -22,22 +50,25 @@ struct SleeveDetectionResult{
 
 class SignalSleeveDetection {
 private:
-    int x = 0;
-    int y = 0;
-    int width = 0;
-    int height = 0;
-    const float COLORS[3][2] = { {109, 150}, {138, 177}, {125, 91} }; //brown,pink,green
-    const int MAX_WIDTH = 1920;
-    const int MAX_HEIGHT = 1080;
-    const int START = y * MAX_HEIGHT + x;
-    const int END = height * MAX_HEIGHT + width;
+    DetectionZone detectionZone;
+    ColorBox colorBoxes; // 3 items
+    Size imageSize;
 
 public:
-    SignalSleeveDetection(int x, int y, int width, int height);
+    SignalSleeveDetection(ColorBox colorBoxes[], DetectionZone detectionZone, Size imageSize, int colorBytePerPixel);
 
-    int checkBounds(uint8_t x, uint8_t y);
+    int getColorType(uint8_t *u, uint8_t *v);
 
     SleeveDetectionResult detectSignalLevel(uInt8Buffer yBuffer, uInt8Buffer uBuffer, uInt8Buffer vBuffer);
+
+    // 2 for yuv 420_888; 420 = 4:2, so 2 brightness pixels per color, _888 = 8 bits = 1 byte. So every 2 pixels is a new color byte.
+    int colorBytePerPixel;
+
+    // Variables computed in the constructor from detection zone and image sizes, used in primary color counter loop.
+    int startBufferIndex;
+    int endBufferIndex;
+    int repeatRowBufferIndex;
+    int addToRepeatRow;
 };
 
 

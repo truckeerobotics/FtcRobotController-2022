@@ -10,12 +10,15 @@
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/c/c_api.h"
 #include "signalSleeveDetection.h"
+#include <iostream>
+#include <fstream>
+
+#include <android/log.h>
+
+//static SignalSleeveDetection signalSleeveObject = SignalSleeveDetection(0,0,1920,1080);
 
 extern "C" JNIEXPORT void JNICALL
 Java_org_firstinspires_ftc_teamcode_Robot_passImageBuffers(JNIEnv *env, jobject obj, jbyteArray bufferY, jbyteArray bufferU, jbyteArray bufferV);
-
-extern "C" JNIEXPORT void JNICALL
-Java_org_firstinspires_ftc_teamcode_Robot_initSignalSleeveDetection(JNIEnv *env, jobject obj);
 
 extern "C" JNIEXPORT jint JNICALL
 Java_org_firstinspires_ftc_teamcode_Robot_getSleeveLevel(JNIEnv *env, jobject obj);
