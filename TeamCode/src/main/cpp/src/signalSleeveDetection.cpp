@@ -12,7 +12,22 @@ ColorBox::ColorBox(Point center, Size size, Size max) {
 ColorBox::ColorBox() {};
 
 
-int SignalSleeveDetection::getColorType(uint8_t *u, uint8_t *v){
+int SignalSleeveDetection::getColorType(uint8_t *y, uint8_t *u, uint8_t *v){
+    // Cast to int, as to do operations you gotta promote to 32 bit int anyways.
+    int yInt = (int)*y;
+    int uInt = (int)*u;
+    int vInt = (int)*v;
+
+    for (int i = 0; i < 3; ++i) {
+        ColorBox colorBox = *(colorBoxes+i);
+        if (uInt < colorBox.uStart && uInt > colorBox.uEnd) {
+            if (uInt < colorBox.uStart && uInt > colorBox.uEnd) {
+                if (uInt < colorBox.uStart && uInt > colorBox.uEnd) {
+
+                }
+            }
+        }
+    }
     return 0;
 }
 
@@ -28,7 +43,7 @@ SleeveDetectionResult SignalSleeveDetection::detectSignalLevel(uInt8Buffer yBuff
     for(int i=startBufferIndex; i<endBufferIndex; i++){
         int colorType = getColorType(uBuffer+i, vBuffer+i);
         pixelCounts[colorType]++;
-        if(i != 0 && i % repeatRowBufferIndex == 0){
+        if(i % imageSize.x == repeatRowBufferIndex){
             i += addToRepeatRow;
         }
     }
@@ -48,7 +63,14 @@ SleeveDetectionResult SignalSleeveDetection::detectSignalLevel(uInt8Buffer yBuff
 }
 
 SignalSleeveDetection::SignalSleeveDetection(ColorBox *colorBoxes, DetectionZone detectionZone, Size imageSize, int colorBytePerPixel) {
+    this->detectionZone = detectionZone;
+    this->imageSize = imageSize;
+    this->colorBytePerPixel = colorBytePerPixel;
 
+    this->startBufferIndex = detectionZone.start.x + (detectionZone.start.y*imageSize.x);
+    this->endBufferIndex = detectionZone.end.x + (detectionZone.end.y*imageSize.x);
+    this->repeatRowBufferIndex = detectionZone.end.x;
+    this->addToRepeatRow = (imageSize.x - detectionZone.end.x) + detectionZone.start.x;
 }
 
 SleeveDetectionResult::SleeveDetectionResult(int level, float confidence) {

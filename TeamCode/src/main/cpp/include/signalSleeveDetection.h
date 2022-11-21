@@ -51,7 +51,7 @@ struct SleeveDetectionResult{
 class SignalSleeveDetection {
 private:
     DetectionZone detectionZone;
-    ColorBox colorBoxes; // 3 items
+    ColorBox* colorBoxes; // 3 items
     Size imageSize;
 
 public:
