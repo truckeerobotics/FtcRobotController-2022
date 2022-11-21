@@ -57,7 +57,7 @@ private:
 public:
     SignalSleeveDetection(ColorBox colorBoxes[], DetectionZone detectionZone, Size imageSize, int colorBytePerPixel);
 
-    int getColorType(uint8_t *u, uint8_t *v);
+    int getColorType(uint8_t *y, uint8_t *u, uint8_t *v);
 
     SleeveDetectionResult detectSignalLevel(uInt8Buffer yBuffer, uInt8Buffer uBuffer, uInt8Buffer vBuffer);
 
