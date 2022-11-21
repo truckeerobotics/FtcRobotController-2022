@@ -5,6 +5,12 @@ import android.graphics.Color;
 import android.view.View;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+import java.util.Locale;
 
 public class Tester {
     private LinearOpMode opmode;
@@ -14,15 +20,7 @@ public class Tester {
     }
 
     public void run(){
-        View relativeLayout;
-
-        int relativeLayoutId = opmode.hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", opmode.hardwareMap.appContext.getPackageName());
-        relativeLayout = ((Activity)opmode.hardwareMap.appContext).findViewById(relativeLayoutId);
-
-        opmode.waitForStart();
-
         while(!opmode.isStopRequested()){
-            relativeLayout.setBackgroundColor(Color.RED);
         }
     }
 }
