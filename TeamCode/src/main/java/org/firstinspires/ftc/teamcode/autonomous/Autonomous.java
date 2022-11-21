@@ -35,32 +35,61 @@ public class Autonomous {
         colorSensor = opmode.hardwareMap.get(ColorSensor.class, "sensor_color");
 
         opmode.waitForStart();
-        while (opmode.opModeIsActive()) {
-            Color.RGBToHSV(colorSensor.red() * 8, colorSensor.green() * 8, colorSensor.blue() * 8, hsvValues);
 
-            opmode.telemetry.addData("Red  ", colorSensor.red());
-            opmode.telemetry.addData("Green", colorSensor.green());
-            opmode.telemetry.addData("Blue ", colorSensor.blue());
-            opmode.telemetry.addData("Hue", hsvValues[0]);
+        Encoder[] encoderArray = {motorBackLeftEncoder, motorBackRightEncoder, motorFrontLeftEncoder, motorFrontRightEncoder};
+        move.driveInches(20, 0.50, encoderArray);
+        move.stop();
+
+        opmode.resetRuntime();
+        int[] colors = new int[3];
+        while(opmode.getRuntime() < 5.0 && !opmode.isStopRequested()) {
+            Color.RGBToHSV(colorSensor.red() * 8, colorSensor.green() * 8, colorSensor.blue() * 8, hsvValues);
 
             String color = "NO COLOR";
             int level = 0;
 
-            if(colorSensor.blue() > colorSensor.green() && colorSensor.blue() > colorSensor.red()){
+            if (colorSensor.blue() > colorSensor.green() && colorSensor.blue() > colorSensor.red()) {
                 color = "blue";
                 level = 1;
-            }else if(colorSensor.green() > colorSensor.red() && colorSensor.green() > colorSensor.blue()){
+            } else if (colorSensor.green() > colorSensor.red() && colorSensor.green() > colorSensor.blue()) {
                 color = "green";
                 level = 2;
-            }else if(colorSensor.red() > colorSensor.green() && colorSensor.red() > colorSensor.blue()){
+            } else if (colorSensor.red() > colorSensor.green() && colorSensor.red() > colorSensor.blue()) {
                 color = "orange";
                 level = 3;
             }
+            colors[level-1]++;
+
+            opmode.telemetry.addData("Red  ", colorSensor.red());
+            opmode.telemetry.addData("Green", colorSensor.green());
+            opmode.telemetry.addData("Blue ", colorSensor.blue());
             opmode.telemetry.addData("color", color);
             opmode.telemetry.addData("level", level);
 
             opmode.telemetry.update();
         }
+
+        int highest = Integer.MIN_VALUE;
+        int highestIndex = -1;
+        for(int i=0; i<colors.length; i++){
+            if(colors[i] > highest){
+                highest = colors[i];
+                highestIndex = i;
+            }
+        }
+
+        opmode.resetRuntime();
+        move.driveInches(10, 0.75, encoderArray);
+        while(opmode.getRuntime() < 3 && !opmode.isStopRequested()){
+            if(highestIndex == 0){
+                move.strafeLeft(0.75);
+            }else if(highestIndex == 1){
+                //we dont need to move lol
+            }else if(highestIndex == 2){
+                move.strafeLeft(-0.75);
+            }
+        }
+        move.stop();
     }
 
     public Boolean blueLeft(){

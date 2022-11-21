@@ -44,6 +44,13 @@ public class Movement {
         motorFrontRight.setPower(speed);
     }
 
+    public void strafeLeft(double speed){
+        motorBackLeft.setPower(speed*-1);
+        motorBackRight.setPower(speed);
+        motorFrontLeft.setPower(speed);
+        motorFrontRight.setPower(speed*-1);
+    }
+
     public static final int LEFT = 0;
     public static final int RIGHT = 1;
     public void turn(int direction, double speed){
@@ -74,14 +81,12 @@ public class Movement {
     public void driveInches(int inches, double speed, Encoder[] encoders){
         while(checkEncoders(encoders, inches) && !opmode.isStopRequested()) {
             driveForward(speed);
-//            opmode.telemetry.addData("left dif", -leftEncoder.getDifference());
-//            opmode.telemetry.addData("right dif", rightEncoder.getDifference());
-//            opmode.telemetry.addData("left enc", leftEncoder);
-//            opmode.telemetry.addData("right enc", rightEncoder);
-//            opmode.telemetry.addData("stop req", opmode.isStopRequested());
-//            opmode.telemetry.addData("inches", inches);
-//            opmode.telemetry.addData("uhg", leftEncoder.getDifference() < inches && rightEncoder.getDifference() < inches && !opmode.isStopRequested());
-//            opmode.telemetry.update();
+        }
+    }
+
+    public void strafeLeftInches(int inches, double speed, Encoder[] encoders){
+        while(checkEncoders(encoders, inches) && !opmode.isStopRequested()) {
+            strafeLeft(speed);
         }
     }
 

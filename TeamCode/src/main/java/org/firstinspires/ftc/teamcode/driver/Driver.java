@@ -61,10 +61,6 @@ public class Driver {
         double swingPos = 0;
         double hookPos = 0;
         while (!opmode.isStopRequested()) {
-/*            opmode.telemetry.addData("toggle", toggle);
-            opmode.telemetry.addData("gamepad1x", opmode.gamepad1.x);
-            opmode.telemetry.update();
-            */
 
             if(input.onPush(opmode.gamepad2.x, "controller2ButtonX")) {
                 toggle = !toggle;
