@@ -1,8 +1,5 @@
 #include "../include/camera.h"
 
-
-
-
 extern "C" JNIEXPORT void JNICALL
 Java_org_firstinspires_ftc_teamcode_Robot_passImageBuffers(JNIEnv *env, jobject obj, jbyteArray bufferY, jbyteArray bufferU, jbyteArray bufferV) {
     imageBufferY = getBufferFromJavaByteBuffer(env, bufferY);
@@ -12,9 +9,9 @@ Java_org_firstinspires_ftc_teamcode_Robot_passImageBuffers(JNIEnv *env, jobject 
 
 extern "C" JNIEXPORT jint JNICALL
 Java_org_firstinspires_ftc_teamcode_Robot_getSleeveLevel(JNIEnv *env, jobject obj) {
-    //SleeveDetectionResult detectionResult = signalSleeveObject.detectSignalLevel(imageBufferY, imageBufferU, imageBufferV);
-    //return detectionResult.confidence;
-    return 0;
+    SleeveDetectionResult detectionResult = signalSleeveObject.detectSignalLevel(imageBufferY, imageBufferU, imageBufferV);
+    return detectionResult.level;
+    //return 0;
 }
 
 

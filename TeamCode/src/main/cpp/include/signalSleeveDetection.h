@@ -9,22 +9,29 @@
 #include <jni.h>
 #include <algorithm>
 
-#include "camera.h"
+#include "imageBuffers.h"
+
 
 
 struct Point {
     int x;
     int y;
+    Point(int x, int y) {this->x = x; this->y = y;};
+    Point() {x=0; y=0;};
 };
 
 struct Size {
     int x;
     int y;
+    Size(int x, int y) {this->x = x; this->y = y;};
+    Size() {x=0; y=0;};
 };
 
 struct DetectionZone {
     Point start;
     Point end;
+    DetectionZone(Point start, Point end) {this->start = start; this->end = end;};
+    DetectionZone() {start = Point(); end = Point();};
 };
 
 // Color bounds for YUV (Y: Brightness, U & V: Color). xy = uv
@@ -36,7 +43,7 @@ struct ColorBox {
     int yMax;
     int yMin;
 
-    ColorBox(Point center, Size size, Size max);
+    ColorBox(Point start, Point end, int yMin, int yMax);
     ColorBox();
 };
 
