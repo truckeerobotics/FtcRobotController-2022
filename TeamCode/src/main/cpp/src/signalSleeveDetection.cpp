@@ -41,7 +41,7 @@ SleeveDetectionResult SignalSleeveDetection::detectSignalLevel(uInt8Buffer yBuff
     int pixelCounts[4] = {0,0,0, 0};
 
     for(int i=startBufferIndex; i<endBufferIndex; i++){
-        int colorType = getColorType(uBuffer+i, vBuffer+i);
+        int colorType = getColorType(yBuffer+i, uBuffer+i, vBuffer+i);
         pixelCounts[colorType]++;
         if(i % imageSize.x == repeatRowBufferIndex){
             i += addToRepeatRow;
