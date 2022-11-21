@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.autonomous.Autonomous;
 import org.firstinspires.ftc.teamcode.driver.Driver;
+import org.firstinspires.ftc.teamcode.other.Tester;
 
 public class Robot2 {
     /** TO LATER BE CONVERTED TO ROBOT.JAVA
@@ -38,6 +39,9 @@ public class Robot2 {
         } else if(type.equals("DriverJV")) {
             Driver driver = new Driver(opmode);
             driver.runJV();
+        } else if(type.equals("Testing")){
+            Tester test = new Tester(opmode);
+            test.run();
         } else {
             Autonomous auto = new Autonomous(opmode);
             if (type.equals("AutoBlueLeft")) {

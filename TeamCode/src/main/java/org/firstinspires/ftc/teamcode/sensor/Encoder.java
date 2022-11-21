@@ -21,4 +21,8 @@ public class Encoder {
     public int getDifference(){
         return (int) (this.motor.getCurrentPosition() * COUNTS_PER_INCH - startingPos);
     }
+
+    public void reset(){
+        startingPos = (int) (motor.getCurrentPosition() * COUNTS_PER_INCH);
+    }
 }

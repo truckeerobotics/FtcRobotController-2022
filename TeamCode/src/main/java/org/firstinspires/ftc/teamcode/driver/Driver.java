@@ -48,18 +48,20 @@ public class Driver {
         motorBackRight.setDirection(DcMotor.Direction.REVERSE);
         armLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        coneHook.setPosition(0);
-        armSwing.setPosition(0.5);
-
-
-
-        opmode.waitForStart();
+        opmode.telemetry.addData("STATUS", "Waiting for start");
+        opmode.telemetry.update();
 
         DriverInput input = new DriverInput(opmode.gamepad1, opmode.gamepad2);
         Boolean toggle = false;
         Boolean toggle2 = false;
-        double swingPos = 0;
+        double swingPos = 0.25;
         double hookPos = 0;
+
+        coneHook.setPosition(hookPos);
+        armSwing.setPosition(swingPos);
+
+        opmode.waitForStart();
+
         while (!opmode.isStopRequested()) {
 
             if(input.onPush(opmode.gamepad2.x, "controller2ButtonX")) {
@@ -76,16 +78,15 @@ public class Driver {
                 if (toggle2) {
                     swingPos = 0.75;
                 } else {
-                    swingPos = 0.05;
+                    swingPos = 0.25;
                 }
             }
 
 
 
-            if(!toggle2){
-                armLeft.setPower(opmode.gamepad2.left_stick_y);
-                armRight.setPower(opmode.gamepad2.left_stick_y);
-            }
+            armLeft.setPower(opmode.gamepad2.left_stick_y * 0.4);
+            //0.5 is to fix speed
+            armRight.setPower(opmode.gamepad2.left_stick_y * 0.4);
 
             double x = -opmode.gamepad1.left_stick_x;
             double y = -opmode.gamepad1.left_stick_y;
