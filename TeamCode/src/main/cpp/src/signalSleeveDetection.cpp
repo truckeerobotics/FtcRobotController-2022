@@ -62,16 +62,16 @@ SleeveDetectionResult SignalSleeveDetection::detectSignalLevel(uInt8Buffer yBuff
     float levelConfidences[3] = {0,0,0};
     int sum; for (int i = 0; i < 3; ++i) { sum += pixelCounts[i]; };
     if (sum == 0) { return SleeveDetectionResult(4,0.0f); };
-    javaLog("LOG", true, true);
-    javaLog("sum" + std::to_string(sum));
+    //javaLog("LOG", true, true);
+    //javaLog("sum" + std::to_string(sum));
     // Get highest confidence level
     int max = 0;
     int detectedLevel = 0;
     for (int i = 0; i < 3; i++) {
-        javaLog("level(+1): " + std::to_string(i+1));
-        javaLog("pixel count: " + std::to_string(pixelCounts[i]));
+        //javaLog("level(+1): " + std::to_string(i+1));
+        //javaLog("pixel count: " + std::to_string(pixelCounts[i]));
         levelConfidences[i] = pixelCounts[i] / sum;
-        javaLog("level confidence: " + std::to_string(pixelCounts[i]));
+        //javaLog("level confidence: " + std::to_string(pixelCounts[i]));
         if (levelConfidences[i] > max) {
             max = levelConfidences[i];
             detectedLevel = i;

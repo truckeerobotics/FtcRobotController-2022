@@ -120,6 +120,7 @@ public class Driver {
         DcMotor motorFrontRight = opmode.hardwareMap.dcMotor.get("mFR");
         DcMotor motorBackRight = opmode.hardwareMap.dcMotor.get("mBR");
         DcMotor motorArm = opmode.hardwareMap.dcMotor.get("arm");
+        Servo servoArm = opmode.hardwareMap.servo.get("sArm");
 
         motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
         motorBackRight.setDirection(DcMotor.Direction.REVERSE);
@@ -143,8 +144,11 @@ public class Driver {
             motorFrontRight.setPower(frontRightPower);
             motorBackRight.setPower(backRightPower);
 
-            double armY = opmode.gamepad1.right_stick_y;
+            double armY = opmode.gamepad2.right_stick_y;
             motorArm.setPower(armY);
+
+            double armX = opmode.gamepad2.left_stick_x;
+            servoArm.setPosition(servoArm.getPosition()+armX);
 
             opmode.telemetry.addData("ARM Y", armY);
 
