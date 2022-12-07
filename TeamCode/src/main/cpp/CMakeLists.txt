@@ -16,8 +16,8 @@ project("Nova")
 #/Users/alex/Library/Android/sdk/ndk/21.3.6528147
 #cmake -DCMAKE_TOOLCHAIN_FILE=/Users/alex/Library/Android/sdk/ndk/21.3.6528147/build/cmake/android.toolchain.cmake -DANDROID_ABI=arm64-v8a ../tensorflow_src/tensorflow/lite
 
-add_subdirectory(
-        "third_party/tflite" EXCLUDE_FROM_ALL)
+#add_subdirectory(
+#        "third_party/tflite" EXCLUDE_FROM_ALL)
 
 #add_subdirectory(third_party/tflite)
 
@@ -35,7 +35,7 @@ add_library( # Sets the name of the library.
              SHARED
 
              # Provides a relative path to your source file(s).
-        "include/camera.h" "src/camera.cpp" "include/signalSleeveDetection.h" "src/signalSleeveDetection.cpp" "include/imageBuffers.h" "src/imageBuffers.cpp")
+        "include/camera.h" "src/camera.cpp" "include/signalSleeveDetection.h" "src/signalSleeveDetection.cpp" "include/imageBuffers.h" "src/imageBuffers.cpp" "include/cameraPositionDetection.h" "src/cameraPositionDetection.cpp" "include/logger.h" "src/logger.cpp")
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
@@ -60,6 +60,6 @@ target_link_libraries( # Specifies the target library.
 
                        # Links the target library to the log library
                        # included in the NDK.
-                       ${log-lib} ${log-lib} tflite)
+                       ${log-lib} ${log-lib} ) #tflite
 
 

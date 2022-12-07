@@ -4,7 +4,9 @@ package org.firstinspires.ftc.teamcode.sensor;
 import static android.content.Context.CAMERA_SERVICE;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.media.Image;
@@ -17,8 +19,10 @@ import androidx.annotation.NonNull;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 public class CameraController {
 
@@ -65,7 +69,6 @@ public class CameraController {
 
         CameraStatus = telemetry.addData("Camera", "init");
         telemetry.update();
-
         try {
             String[] cameraIdList = cameraManager.getCameraIdList();
 
@@ -76,22 +79,13 @@ public class CameraController {
 
             for (int cameraIndex = 0; cameraIndex < cameraIdCount; cameraIndex++) {
                 String cameraId = cameraIdList[cameraIndex];
-                String cameraName = "nilName";
 
-                for (Map.Entry<String, String> entry : cameraNames.entrySet()) {
-                    if (entry.getValue().equals(cameraId)) {
-                        cameraName = entry.getKey();
-                        break;
-                    }
-                }
-                if (cameraName.equals("nilName")) {
-                    cameraName = "Unknown" + cameraId;
-                }
-                telemetry.addData("Name", cameraName);
-                Camera cameraObject = new Camera(cameraId, cameraName, cameraManager, telemetry, context, cameraThreadHandler);
-                telemetry.addData("camera is null?", cameraObject == null);
+                Integer lensFacing = cameraManager.getCameraCharacteristics(cameraId).get(CameraCharacteristics.LENS_FACING);
+                telemetry.addData("Lens Facing", lensFacing);
+                telemetry.addData("Camera:", "EXTERNAL, CONTINUING");
+
+                createNewCameraObject(cameraId);
                 telemetry.update();
-                cameras.put(cameraId, cameraObject);
             }
         } catch (CameraAccessException cameraException) {
             telemetry.addData("Failed", "Camera Exception");
@@ -110,16 +104,24 @@ public class CameraController {
         return true;
     }
 
-    public Camera getCameraByName(String cameraName) {
-        String cameraId = cameraNames.get(cameraName);
-        if (cameraId != null && cameras.get(cameraId) != null){
-            return cameras.get(cameraId);
-        } else {
-            throw new RuntimeException("Camera of such a name does not exist");
-        }
+    public Camera getCamera(@NonNull String cameraId) {
+        return cameras.get(cameraId);
     }
 
-//    public void onOpModeStopped() {
-//        cameraThreadHandler.getLooper().quit();
-//    }
+    /// --------------------------------------------------------------------------- ///
+    /// Functions ///
+    /// --------------------------------------------------------------------------- ///
+
+    public void createNewCameraObject(String cameraId) {
+        Camera cameraObject = new Camera(cameraId, cameraManager, telemetry, context, cameraThreadHandler);
+        cameras.put(cameraId, cameraObject);
+        telemetry.addData("Created Camera of ID", cameraId);
+        telemetry.update();
+    }
+
+    /// --------------------------------------------------------------------------- ///
+    /// Callbacks ///
+    /// --------------------------------------------------------------------------- ///
+
+
 }

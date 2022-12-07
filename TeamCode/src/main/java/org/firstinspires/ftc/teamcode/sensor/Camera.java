@@ -11,7 +11,6 @@ import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.TotalCaptureResult;
-import android.hardware.camera2.params.SessionConfiguration;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
@@ -46,7 +45,6 @@ public class Camera {
     private ImageReader imageReader;
     private Surface imageSurface;
     private Size maxImageSize;
-    private String name;
     private CameraDevice cameraDevice;
     private CaptureRequest.Builder captureSessionRequestBuilder;
 
@@ -54,11 +52,10 @@ public class Camera {
     private CameraManager cameraManager;
     private Handler threadHandler;
 
-    public Camera(String cameraId, String name, CameraManager cameraManager, Telemetry opmodeTelemetry, Context appContext, Handler threadHandler) {
+    public Camera(String cameraId, CameraManager cameraManager, Telemetry opmodeTelemetry, Context appContext, Handler threadHandler) {
         this.telemetry = opmodeTelemetry;
         this.cameraManager = cameraManager;
         this.threadHandler = threadHandler;
-        this.name = name;
 
         try {
             this.characteristics = cameraManager.getCameraCharacteristics(cameraId);

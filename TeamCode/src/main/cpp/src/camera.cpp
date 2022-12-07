@@ -7,10 +7,11 @@ Java_org_firstinspires_ftc_teamcode_Robot_passImageBuffers(JNIEnv *env, jobject 
     imageBufferV = getBufferFromJavaByteBuffer(env, bufferV);
 }
 
-extern "C" JNIEXPORT jint JNICALL
+extern "C" JNIEXPORT jstring JNICALL
 Java_org_firstinspires_ftc_teamcode_Robot_getSleeveLevel(JNIEnv *env, jobject obj) {
     SleeveDetectionResult detectionResult = signalSleeveObject.detectSignalLevel(imageBufferY, imageBufferU, imageBufferV);
-    return detectionResult.level;
+    std::string outputString = "level: " + std::to_string(detectionResult.level) + ", conf: " +std::to_string(detectionResult.confidence);
+    return env->NewStringUTF(outputString.c_str());
     //return 0;
 }
 

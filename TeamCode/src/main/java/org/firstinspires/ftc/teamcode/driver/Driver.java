@@ -119,6 +119,7 @@ public class Driver {
         DcMotor motorBackLeft = opmode.hardwareMap.dcMotor.get("mBL");
         DcMotor motorFrontRight = opmode.hardwareMap.dcMotor.get("mFR");
         DcMotor motorBackRight = opmode.hardwareMap.dcMotor.get("mBR");
+        DcMotor motorArm = opmode.hardwareMap.dcMotor.get("arm");
 
         motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
         motorBackRight.setDirection(DcMotor.Direction.REVERSE);
@@ -141,6 +142,11 @@ public class Driver {
             motorBackLeft.setPower(backLeftPower);
             motorFrontRight.setPower(frontRightPower);
             motorBackRight.setPower(backRightPower);
+
+            double armY = opmode.gamepad1.right_stick_y;
+            motorArm.setPower(armY);
+
+            opmode.telemetry.addData("ARM Y", armY);
 
             opmode.telemetry.addData("X", x);
             opmode.telemetry.addData("Y", y);

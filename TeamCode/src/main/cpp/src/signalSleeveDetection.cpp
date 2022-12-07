@@ -28,7 +28,7 @@ int SignalSleeveDetection::getColorType(uint8_t *y, uint8_t *u, uint8_t *v){
     for (int i = 0; i < 3; ++i) {
         ColorBox colorBox = *(colorBoxes+i);
         if (uInt > colorBox.uStart && uInt < colorBox.uEnd) {
-            if (vInt > colorBox.vStart && vInt < colorBox.vEnd) {
+            if (vInt < colorBox.vStart && vInt > colorBox.vEnd) {
                 if (yInt < colorBox.yMax && yInt > colorBox.yMin) {
                     return i;
                 }
@@ -45,43 +45,54 @@ SleeveDetectionResult SignalSleeveDetection::detectSignalLevel(uInt8Buffer yBuff
 
     // Count up all the pixels within the bounds of each color
     // Any not in any color bound counts to #3
-    int pixelCounts[4] = {0,0,0};
+    int pixelCounts[3] = {0,0,0};
 
     for(int i=startBufferIndex; i<endBufferIndex; i++){
-        int colorType = getColorType(yBuffer+i, uBuffer+i, vBuffer+i);
+        int colorType = getColorType(yBuffer+i*(bytePerPixel*2), uBuffer+i*bytePerPixel, vBuffer+i*bytePerPixel);
         if (colorType != 4) {
             pixelCounts[colorType]++;
         }
         if(i % imageSize.x == repeatRowBufferIndex){
+
             i += addToRepeatRow;
         }
     }
 
-    const int arraySize = sizeof(pixelCounts) / sizeof(int);
-
     // Get percentage of confidence per level
     float levelConfidences[3] = {0,0,0};
-    int sum; std::accumulate(pixelCounts, pixelCounts+arraySize, sum);
+    int sum; for (int i = 0; i < 3; ++i) { sum += pixelCounts[i]; };
     if (sum == 0) { return SleeveDetectionResult(4,0.0f); };
-    for (int i = 0; i < 3; i++) { levelConfidences[i] =  pixelCounts[i] / sum; }
+    javaLog("LOG", true, true);
+    javaLog("sum" + std::to_string(sum));
+    // Get highest confidence level
+    int max = 0;
+    int detectedLevel = 0;
+    for (int i = 0; i < 3; i++) {
+        javaLog("level(+1): " + std::to_string(i+1));
+        javaLog("pixel count: " + std::to_string(pixelCounts[i]));
+        levelConfidences[i] = pixelCounts[i] / sum;
+        javaLog("level confidence: " + std::to_string(pixelCounts[i]));
+        if (levelConfidences[i] > max) {
+            max = levelConfidences[i];
+            detectedLevel = i;
+        }
 
-    // Gets the index of the level with the most pixels
-    int detectedLevel = std::distance(pixelCounts, std::max_element(pixelCounts, pixelCounts + arraySize));
+    }
 
     // Return the level (+1 so it is more human readable) and the confidence that it is that level
     return SleeveDetectionResult{detectedLevel, levelConfidences[detectedLevel]};
 }
 
-SignalSleeveDetection::SignalSleeveDetection(ColorBox *colorBoxes, DetectionZone detectionZone, Size imageSize, int colorBytePerPixel) {
+SignalSleeveDetection::SignalSleeveDetection(ColorBox *colorBoxes, DetectionZone detectionZone, Size imageSize, int bytePerPixel) {
     this->detectionZone = detectionZone;
     this->imageSize = imageSize;
-    this->colorBytePerPixel = colorBytePerPixel;
+    this->bytePerPixel = bytePerPixel;
     this->colorBoxes = colorBoxes;
 
-    this->startBufferIndex = detectionZone.start.x + (detectionZone.start.y*imageSize.x);
-    this->endBufferIndex = detectionZone.end.x + (detectionZone.end.y*imageSize.x);
-    this->repeatRowBufferIndex = detectionZone.end.x;
-    this->addToRepeatRow = (imageSize.x - detectionZone.end.x) + detectionZone.start.x;
+    this->startBufferIndex = (detectionZone.start.x + (detectionZone.start.y*imageSize.x))/(bytePerPixel);
+    this->endBufferIndex = (detectionZone.end.x + (detectionZone.end.y*imageSize.x))/(bytePerPixel);
+    this->repeatRowBufferIndex = (detectionZone.end.x)/(bytePerPixel);
+    this->addToRepeatRow = ((imageSize.x - detectionZone.end.x) + detectionZone.start.x)/(bytePerPixel);
 }
 
 SleeveDetectionResult::SleeveDetectionResult(int level, float confidence) {

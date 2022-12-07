@@ -10,6 +10,7 @@
 #include <algorithm>
 
 #include "imageBuffers.h"
+#include "logger.h"
 
 
 
@@ -69,7 +70,7 @@ public:
     SleeveDetectionResult detectSignalLevel(uInt8Buffer yBuffer, uInt8Buffer uBuffer, uInt8Buffer vBuffer);
 
     // 2 for yuv 420_888; 420 = 4:2, so 2 brightness pixels per color, _888 = 8 bits = 1 byte. So every 2 pixels is a new color byte.
-    int colorBytePerPixel;
+    int bytePerPixel;
 
     // Variables computed in the constructor from detection zone and image sizes, used in primary color counter loop.
     int startBufferIndex;
