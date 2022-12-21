@@ -1,18 +1,19 @@
 package org.firstinspires.ftc.teamcode.other;
 
+import android.util.Log;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class NativeLogging {
-    native void registerLogger();
 
-    private Telemetry telemetryToLog;
+    private static Telemetry telemetryToLog;
 
-    public NativeLogging(Telemetry telemetry) {
+    public static void initNativeLogging(Telemetry telemetry) {
         telemetryToLog = telemetry;
-        registerLogger();
     }
 
-    public void logNative(String toLog) {
+    public static void logNative(String toLog) {
+        Log.i("NativeLog", toLog);
         telemetryToLog.addData("Native-Log", toLog);
         telemetryToLog.update();
     };

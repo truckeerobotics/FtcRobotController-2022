@@ -62,8 +62,8 @@ SleeveDetectionResult SignalSleeveDetection::detectSignalLevel(uInt8Buffer yBuff
     float levelConfidences[3] = {0,0,0};
     int sum; for (int i = 0; i < 3; ++i) { sum += pixelCounts[i]; };
     if (sum == 0) { return SleeveDetectionResult(4,0.0f); };
-    //javaLog("LOG", true, true);
-    //javaLog("sum" + std::to_string(sum));
+    javaLog("Testing Log", this->env);
+    javaLog("sum" + std::to_string(sum), this->env);
     // Get highest confidence level
     int max = 0;
     int detectedLevel = 0;
@@ -83,7 +83,7 @@ SleeveDetectionResult SignalSleeveDetection::detectSignalLevel(uInt8Buffer yBuff
     return SleeveDetectionResult{detectedLevel, levelConfidences[detectedLevel]};
 }
 
-SignalSleeveDetection::SignalSleeveDetection(ColorBox *colorBoxes, DetectionZone detectionZone, Size imageSize, int bytePerPixel) {
+SignalSleeveDetection::SignalSleeveDetection(ColorBox *colorBoxes, DetectionZone detectionZone, Size imageSize, int bytePerPixel, JNIEnv* env) {
     this->detectionZone = detectionZone;
     this->imageSize = imageSize;
     this->bytePerPixel = bytePerPixel;
@@ -93,6 +93,8 @@ SignalSleeveDetection::SignalSleeveDetection(ColorBox *colorBoxes, DetectionZone
     this->endBufferIndex = (detectionZone.end.x + (detectionZone.end.y*imageSize.x))/(bytePerPixel);
     this->repeatRowBufferIndex = (detectionZone.end.x)/(bytePerPixel);
     this->addToRepeatRow = ((imageSize.x - detectionZone.end.x) + detectionZone.start.x)/(bytePerPixel);
+
+    this->env = env;
 }
 
 SleeveDetectionResult::SleeveDetectionResult(int level, float confidence) {

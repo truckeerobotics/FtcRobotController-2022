@@ -63,7 +63,7 @@ private:
     Size imageSize;
 
 public:
-    SignalSleeveDetection(ColorBox colorBoxes[], DetectionZone detectionZone, Size imageSize, int colorBytePerPixel);
+    SignalSleeveDetection(ColorBox colorBoxes[], DetectionZone detectionZone, Size imageSize, int colorBytePerPixel, JNIEnv* env);
 
     int getColorType(uint8_t *y, uint8_t *u, uint8_t *v);
 
@@ -77,6 +77,8 @@ public:
     int endBufferIndex;
     int repeatRowBufferIndex;
     int addToRepeatRow;
+
+    JNIEnv* env;
 };
 
 

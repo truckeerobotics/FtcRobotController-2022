@@ -5,20 +5,13 @@
 #include "../include/logger.h"
 
 
-extern "C" JNIEXPORT void JNICALL
-Java_org_firstinspires_ftc_teamcode_other_NativeLogging_registerLogger(JNIEnv *env, jobject obj) {
-    logJavaEnvironment = env;
-    logJavaObject = obj;
+
+int javaLog(const char* toLog, JNIEnv* env, bool telemetry, bool update) {
+    jstring javaStringToLog = env->NewStringUTF(toLog);
 
     jclass nativeLoggerClass = env->FindClass("org/firstinspires/ftc/teamcode/other/NativeLogging");
-    nativeLogMethodId = logJavaEnvironment->GetMethodID(nativeLoggerClass, "logNative", "(Ljava/lang/String;)V");
-}
+    nativeLogMethodId = env->GetStaticMethodID(nativeLoggerClass, "logNative", "(Ljava/lang/String;)V");
 
-int javaLog(const char* toLog, bool telemetry, bool update) {
-    if (logJavaEnvironment == nullptr) { return -1; }
-    if (logJavaObject == nullptr) { return -2; }
-    if (nativeLogMethodId == nullptr) { return -3; }
-    jstring javaStringToLog = logJavaEnvironment->NewStringUTF(toLog);
-    logJavaEnvironment->CallVoidMethod(logJavaObject, nativeLogMethodId, javaStringToLog);
+    env->CallStaticVoidMethod(nativeLoggerClass, nativeLogMethodId, javaStringToLog);
     return 1;
 }

@@ -35,7 +35,7 @@ add_library( # Sets the name of the library.
              SHARED
 
              # Provides a relative path to your source file(s).
-        "include/camera.h" "src/camera.cpp" "include/signalSleeveDetection.h" "src/signalSleeveDetection.cpp" "include/imageBuffers.h" "src/imageBuffers.cpp" "include/cameraPositionDetection.h" "src/cameraPositionDetection.cpp" "include/logger.h" "src/logger.cpp")
+        "include/camera.h" "src/camera.cpp" "include/signalSleeveDetection.h" "src/signalSleeveDetection.cpp" "include/imageBuffers.h" "src/imageBuffers.cpp" "include/logger.h" "src/logger.cpp" "include/transformLocator.h" "src/transformLocator.cpp")
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
