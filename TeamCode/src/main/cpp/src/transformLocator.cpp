@@ -34,7 +34,7 @@ TransformLocator::getPoles(uInt8Buffer yBufferContainer, uInt8Buffer uBufferCont
     uint8_t* uBuffer = uBufferContainer.data;
     uint8_t* vBuffer = vBufferContainer.data;
 
-    getPolePixelLocationsInRow(yBuffer, uBuffer, vBuffer, 1);
+    getPolePixelLocationsInRow(yBuffer, uBuffer, vBuffer, 540);
 
     return std::vector<Pole>();
 }
@@ -56,20 +56,22 @@ bool TransformLocator::isPoleColor(uint8_t *y, uint8_t *u, uint8_t *v){
 
 }
 
+
+
 std::vector<PolePixelLocation>
 TransformLocator::getPolePixelLocationsInRow(uint8_t *yBuffer, uint8_t *uBuffer, uint8_t *vBuffer, int row) {
     std::vector<PolePixelLocation> imagePoleLocations = std::vector<PolePixelLocation>();
 
-    size_t rowStartIndex = row*imageSize.x;
+    size_t rowStartIndex = row*imageSize.x/2;
 
     int pixelPoleStart = -1;
     int pixelPoleLast = -1;
 
     int poleColorDetectedCount = 0;
 
-    for(int pixel=0; pixel<imageSize.x; pixel++){
+    for(int pixel=0; pixel<imageSize.x; pixel+=bytePerPixel){
         size_t index = pixel+rowStartIndex;
-        bool isPixelPoleColor = isPoleColor(yBuffer+index*(bytePerPixel*2), uBuffer+index*bytePerPixel, vBuffer+index*bytePerPixel);
+        bool isPixelPoleColor = isPoleColor(yBuffer+index*2, uBuffer+index, vBuffer+index);
 
         if (isPixelPoleColor) {
             poleColorDetectedCount++;
@@ -83,9 +85,9 @@ TransformLocator::getPolePixelLocationsInRow(uint8_t *yBuffer, uint8_t *uBuffer,
             javaLog(pixelPoleStart, env);
             javaLog(pixelPoleLast, env);
 
-            size_t index2 = pixelPoleStart+imageSize.x;
-            javaLog("START: Y: " + std::to_string(*(yBuffer+index2*(bytePerPixel*2))) + " U: " + std::to_string(*(uBuffer+index2*bytePerPixel)) + " V: " + std::to_string(*(vBuffer+index2*bytePerPixel)), env);
-            javaLog("END: Y: " + std::to_string(*(yBuffer+index*(bytePerPixel*2))) + " U: " + std::to_string(*(uBuffer+index*bytePerPixel)) + " V: " + std::to_string(*(vBuffer+index*bytePerPixel)), env);
+            size_t index2 = pixelPoleStart+rowStartIndex;
+            javaLog("START: Y: " + std::to_string(*(yBuffer+index2*(2))) + " U: " + std::to_string(*(uBuffer+index2)) + " V: " + std::to_string(*(vBuffer+index2)), env);
+            javaLog("END: Y: " + std::to_string(*(yBuffer+index*(2))) + " U: " + std::to_string(*(uBuffer+index)) + " V: " + std::to_string(*(vBuffer+index)), env);
             imagePoleLocations.push_back(PolePixelLocation(pixelPoleStart, pixelPoleLast));
             pixelPoleLast = -1;
             pixelPoleStart = -1;
@@ -111,9 +113,48 @@ Transform TransformLocator::getTransform(std::vector<Pole> poles) {
     return Transform();
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
+//
+//------------------------------------------------------------------------------------------------------------------------------
 
+Point TransformLocator::correctDistortion(Point distortedPoint) {
+//    // Loop over the pixels in the image
+//    // Compute the normalized coordinates of the pixel
+//    float nx = (distortedPoint.x - cx) / fx;
+//    float ny = (distortedPoint.y - cy) / fy;
+//    // Compute the distorted coordinates of the pixel
+//    float dx = nx;
+//    float dy = ny;
+//    for (size_t i = 0; i < distCoeffs.size(); i++) {
+//        float r2 = dx * dx + dy * dy;
+//        float k = distCoeffs[i] * r2;
+//        dx += k * dx; dy += k * dy;
+//    }
+//    // Compute the undistorted coordinates of the pixel
+//    float ux = dx;
+//    float uy = dy;
+//    for (size_t i = 0; i < invDistCoeffs.size(); i++) {
+//        float r2 = ux * ux + uy * uy; float k = invDistCoeffs[i] * r2; ux += k * ux; uy += k * uy;
+//    }
+//    // Compute the pixel coordinates in the undistorted image
+//    int ux0 = std::round(ux * fx + cx);
+//    int uy0 = std::round(uy * fy + cy);
+//    // Check if the pixel is within the bounds of the undistorted image
+//    if (ux0 >= 0 && ux0 < undistorted.width && uy0 >= 0 && uy0 < undistorted.height) {
+//        // Copy the pixel data
+//        size_t offset = (y * image.width + x) * 3;
+//        size_t uoffset = (uy0 * undistorted.width + ux0) * 3;
+//        undistorted.pixels[uoffset] = image.pixels[offset];
+//        undistorted.pixels[uoffset + 1] = image.pixels[offset + 1];
+//        undistorted.pixels[uoffset + 2] = image.pixels[offset + 2];
+//    }
+    return Point();
+}
 
-std::vector<Point> TransformLocator::getIntercepts(double *poleDistances) {
-    return std::vector<Point>();
+std::vector<double> TransformLocator::invertDistanceCoefficients(std::vector<double> distanceCoeffecients) {
+    // Compute the inverse distortion coefficients
+    std::vector<double> inverted = distanceCoeffecients;
+    for (size_t i = 0; i < inverted.size(); i++) { inverted[i] = -inverted[i] / (i + 1); }
+    return inverted;
 }
 

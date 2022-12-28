@@ -17,20 +17,20 @@ ColorBox::ColorBox() {
     this->uStart = 0; this->vStart = 0; this->uEnd = 0; this->vEnd = 0; this->yMax = 0; this->yMin = 0;
 };
 
+// Gets which of the 3 possible side the signal sleeve is on.
+int SignalSleeveDetection::getColorSignalSide(uint8_t *y, uint8_t *u, uint8_t *v){
+    // Cast to int to avoid promoting an 8-bit int to a 32-bit int when performing operations many times.
+    int yInt = static_cast<int>(*y);
+    int uInt = static_cast<int>(*u);
+    int vInt = static_cast<int>(*v);
 
-
-int SignalSleeveDetection::getColorType(uint8_t *y, uint8_t *u, uint8_t *v){
-    // Cast to int, as to do operations you gotta promote to 32 bit int anyways.
-    int yInt = (int)*y;
-    int uInt = (int)*u;
-    int vInt = (int)*v;
-
-    for (int i = 0; i < 3; ++i) {
-        ColorBox colorBox = *(colorBoxes+i);
+    for (int signalSide = 0; signalSide < 3; ++signalSide) {
+        // Check if the current pixel's color values fall within the bounds of the current signal side
+        ColorBox colorBox = *(colorBoxes + signalSide);
         if (uInt > colorBox.uStart && uInt < colorBox.uEnd) {
             if (vInt < colorBox.vStart && vInt > colorBox.vEnd) {
                 if (yInt < colorBox.yMax && yInt > colorBox.yMin) {
-                    return i;
+                    return signalSide;
                 }
             }
         }
@@ -38,46 +38,46 @@ int SignalSleeveDetection::getColorType(uint8_t *y, uint8_t *u, uint8_t *v){
     return 4;
 }
 
-SleeveDetectionResult SignalSleeveDetection::detectSignalLevel(uInt8Buffer yBufferContainer, uInt8Buffer uBufferContainer, uInt8Buffer vBufferContainer){
-    uint8_t* yBuffer = yBufferContainer.data;
-    uint8_t* uBuffer = uBufferContainer.data;
-    uint8_t* vBuffer = vBufferContainer.data;
+/*
+This function is used to detect the side of a signal sleeve based on the color of pixels in an image. It counts the number of
+pixels that fall within the bounds of each of the 3 possible colors that the signal sleeve sides could be, and returns a level and
+confidence level for the color with the highest number of pixels. If no pixels fall within any color bounds, it returns a level
+of 4 and a confidence level of 0. The function uses the helper function getColorSignalSide to determine which color a pixel belongs to.
+ */
+SleeveDetectionResult SignalSleeveDetection::detectSignalSide(uInt8Buffer brightnessDataContainer, uInt8Buffer uColorDataContainer, uInt8Buffer vColorDataContainer){
+    uint8_t* brightnessBuffer = brightnessDataContainer.data;
+    uint8_t* colorUBuffer = uColorDataContainer.data;
+    uint8_t* colorVBuffer = vColorDataContainer.data;
 
     // Count up all the pixels within the bounds of each color
     // Any not in any color bound counts to #3
     int pixelCounts[3] = {0,0,0};
 
-    for(int i=startBufferIndex; i<endBufferIndex; i++){
-        int colorType = getColorType(yBuffer+i*(bytePerPixel*2), uBuffer+i*bytePerPixel, vBuffer+i*bytePerPixel);
-        if (colorType != 4) {
-            pixelCounts[colorType]++;
+    // startBufferIndex is the start index of the detection area, and endBufferIndex is the end.
+    for(int pixelIndex=startBufferIndex; pixelIndex<endBufferIndex; pixelIndex++){
+        // Gets the pixel color & brightness from the buffer, then uses them to get the signal side for the pixel.
+        int signalSide = getColorSignalSide(brightnessBuffer+pixelIndex*(bytePerPixel*2), colorUBuffer +pixelIndex* bytePerPixel, colorVBuffer +pixelIndex* bytePerPixel);
+        if (signalSide != 4) {
+            pixelCounts[signalSide]++;
         }
-        if(i % imageSize.x == repeatRowBufferIndex){
-
-            i += addToRepeatRow;
+        // This makes it loop around when it gets to the end of a row of the detection area.
+        if(pixelIndex % imageSize.x == repeatRowBufferIndex){
+            pixelIndex += addToRepeatRow;
         }
     }
 
-    // Get percentage of confidence per level
-    float levelConfidences[3] = {0,0,0};
-    int sum; for (int i = 0; i < 3; ++i) { sum += pixelCounts[i]; };
+    // Get the sum, if the total number of pixels of each side is 0, then return 4
+    int sum = std::accumulate(std::begin(pixelCounts), std::end(pixelCounts), 0);
     if (sum == 0) { return SleeveDetectionResult(4,0.0f); };
-    javaLog("Testing Log", this->env);
-    javaLog("sum" + std::to_string(sum), this->env);
-    // Get highest confidence level
-    int max = 0;
-    int detectedLevel = 0;
-    for (int i = 0; i < 3; i++) {
-        //javaLog("level(+1): " + std::to_string(i+1));
-        //javaLog("pixel count: " + std::to_string(pixelCounts[i]));
-        levelConfidences[i] = pixelCounts[i] / sum;
-        //javaLog("level confidence: " + std::to_string(pixelCounts[i]));
-        if (levelConfidences[i] > max) {
-            max = levelConfidences[i];
-            detectedLevel = i;
-        }
 
+    // Get highest confidence level
+    float levelConfidences[3] = {0,0,0};
+
+    for (int i = 0; i < 3; i++) {
+        levelConfidences[i] = pixelCounts[i] / sum;
     }
+
+    int detectedLevel = std::max_element(std::begin(levelConfidences), std::end(levelConfidences)) - std::begin(levelConfidences);
 
     // Return the level (+1 so it is more human readable) and the confidence that it is that level
     return SleeveDetectionResult{detectedLevel, levelConfidences[detectedLevel]};

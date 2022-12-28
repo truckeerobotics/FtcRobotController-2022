@@ -65,9 +65,9 @@ private:
 public:
     SignalSleeveDetection(ColorBox colorBoxes[], DetectionZone detectionZone, Size imageSize, int colorBytePerPixel, JNIEnv* env);
 
-    int getColorType(uint8_t *y, uint8_t *u, uint8_t *v);
+    int getColorSignalSide(uint8_t *y, uint8_t *u, uint8_t *v);
 
-    SleeveDetectionResult detectSignalLevel(uInt8Buffer yBuffer, uInt8Buffer uBuffer, uInt8Buffer vBuffer);
+    SleeveDetectionResult detectSignalSide(uInt8Buffer brightnessDataContainer, uInt8Buffer uColorDataContainer, uInt8Buffer vColorDataContainer);
 
     // 2 for yuv 420_888; 420 = 4:2, so 2 brightness pixels per color, _888 = 8 bits = 1 byte. So every 2 pixels is a new color byte.
     int bytePerPixel;

@@ -11,7 +11,8 @@
 #include "logger.h"
 #include <vector>
 
-static ColorBox poleColorBox = ColorBox(Point(50,180), Point(102, 150), 10, 240);
+//ColorBox(Point(50,180), Point(102, 150), 10, 240);
+static ColorBox poleColorBox = ColorBox(Point(25,200), Point(105, 130), 10, 240);
 static int bytePerPixel = 2;
 // How many pixels before a pole is considered finished
 static int poleContinuityTolerance = 4;
@@ -37,6 +38,10 @@ class TransformLocator{
 private:
     JNIEnv *env;
     Size imageSize;
+
+    std::vector<double> invertDistanceCoefficients(std::vector<double> coeffecients);
+    Point correctDistortion(Point distortedPoint);
+
 
 
     bool isPoleColor(uint8_t *y, uint8_t *u, uint8_t *v);
