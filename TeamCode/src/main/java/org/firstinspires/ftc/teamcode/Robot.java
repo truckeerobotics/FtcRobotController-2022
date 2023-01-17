@@ -55,6 +55,9 @@ public class Robot extends LinearOpMode {
         // Setup native logger
         NativeLogging.initNativeLogging(telemetry);
 
+        cameraController = new CameraController();
+        cameraController.init(appContext, telemetry);
+
         telemetry.addData("Init", "Init Successful - Prepare for Failure!");
         telemetry.update();
 
@@ -67,8 +70,7 @@ public class Robot extends LinearOpMode {
         telemetry.addData("Camera", "Setting up instance");
         telemetry.update();
 
-        cameraController = new CameraController();
-        cameraController.init(appContext, telemetry);
+
         Camera frontCamera = cameraController.getCamera("0");
         frontCamera.addCallbacks(cameraCallback);
 
@@ -78,6 +80,7 @@ public class Robot extends LinearOpMode {
         while (!isStopRequested()) {
 
         }
+        frontCamera.shutdown();
     }
 
     Camera.CameraCallback cameraCallback = new Camera.CameraCallback() {
@@ -100,35 +103,36 @@ public class Robot extends LinearOpMode {
             byte[] yBuffer = planeToByteBuffer(imagePlanes[0]);
             byte[] uBuffer = planeToByteBuffer(imagePlanes[1]);
             byte[] vBuffer = planeToByteBuffer(imagePlanes[2]);
-            passImageBuffers(yBuffer,uBuffer,vBuffer);
-            String sleeveLevel = getSleeveLevel();
-            telemetry.addData("Sleeve Level", sleeveLevel);
-            telemetry.update();
-
-            String bufferUnsignedInt8 = "";
-            String bufferUnsignedInt8RawY = "";
-            String bufferUnsignedInt8RawU = "";
-            String bufferUnsignedInt8RawV = "";
-            for (int i = 0; i < 1000; i++) {
-                int unsignedInt8y = yBuffer[i*4] & 0xFF;
-                int unsignedInt8u = uBuffer[i*2] & 0xFF;
-                int unsignedInt8v = vBuffer[i*2] & 0xFF;
-                bufferUnsignedInt8 += "(" + Integer.toString(unsignedInt8y) + ";" + Integer.toString(unsignedInt8u) + ";" + Integer.toString(unsignedInt8v) + ";),";
-                bufferUnsignedInt8RawY += unsignedInt8y + ",";
-                bufferUnsignedInt8RawU += unsignedInt8u + ",";
-                bufferUnsignedInt8RawV += unsignedInt8v + ",";
-            }
-            String fullDataString = bufferUnsignedInt8RawY + "|||" + bufferUnsignedInt8RawU + "|||" + bufferUnsignedInt8RawV + "###" + bufferUnsignedInt8;
-            telemetry.addData("Camera Processor", "Writing Data File");
-            telemetry.update();
-            String filename = "BRIGHTNESS_TEST_FILE.txt";
-            File file = AppUtil.getInstance().getSettingsFile(filename);
-            ReadWriteFile.writeFile(file, fullDataString);
-
-            getTransform();
-            telemetry.addData("IMAGE", "Started writing image to jpeg");
-            telemetry.update();
             yuvImageSaveJPEG(latestImage);
+            passImageBuffers(yBuffer,uBuffer,vBuffer);
+            getTransform();
+            //String sleeveLevel = getSleeveLevel();
+            //telemetry.addData("Sleeve Level", sleeveLevel);
+//            telemetry.update();
+//
+//            String bufferUnsignedInt8 = "";
+//            String bufferUnsignedInt8RawY = "";
+//            String bufferUnsignedInt8RawU = "";
+//            String bufferUnsignedInt8RawV = "";
+//            for (int i = 0; i < 1000; i++) {
+//                int unsignedInt8y = yBuffer[i*4] & 0xFF;
+//                int unsignedInt8u = uBuffer[i*2] & 0xFF;
+//                int unsignedInt8v = vBuffer[i*2] & 0xFF;
+//                bufferUnsignedInt8 += "(" + Integer.toString(unsignedInt8y) + ";" + Integer.toString(unsignedInt8u) + ";" + Integer.toString(unsignedInt8v) + ";),";
+//                bufferUnsignedInt8RawY += unsignedInt8y + ",";
+//                bufferUnsignedInt8RawU += unsignedInt8u + ",";
+//                bufferUnsignedInt8RawV += unsignedInt8v + ",";
+//            }
+//            String fullDataString = bufferUnsignedInt8RawY + "|||" + bufferUnsignedInt8RawU + "|||" + bufferUnsignedInt8RawV + "###" + bufferUnsignedInt8;
+//            telemetry.addData("Camera Processor", "Writing Data File");
+//            telemetry.update();
+//            String filename = "BRIGHTNESS_TEST_FILE.txt";
+//            File file = AppUtil.getInstance().getSettingsFile(filename);
+//            ReadWriteFile.writeFile(file, fullDataString);
+
+
+
+
             telemetry.addData("IMAGE", "Finished writing image to jpeg");
             telemetry.update();
         };
@@ -139,6 +143,9 @@ public class Robot extends LinearOpMode {
         byte[] RGBBytes = NV21toJPEG(data, newImage.getWidth(), newImage.getHeight(), 100);
 
         String path = Environment.getExternalStorageDirectory() + "/FIRST/JPEG_FROM_YUV.jpeg";
+
+        telemetry.addData("PATH", path);
+        telemetry.update();
 
         FileOutputStream fileOutputStream = null;
         try

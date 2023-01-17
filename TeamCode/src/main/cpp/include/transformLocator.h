@@ -9,7 +9,12 @@
 
 #include "signalSleeveDetection.h"
 #include "logger.h"
+#include <opencv2/opencv.hpp>
+#include <opencv2/calib3d.hpp>
 #include <vector>
+#include <ostream>
+#include <fstream>
+#include <cmath>
 
 //ColorBox(Point(50,180), Point(102, 150), 10, 240);
 static ColorBox poleColorBox = ColorBox(Point(25,200), Point(105, 130), 10, 240);
@@ -39,16 +44,15 @@ private:
     JNIEnv *env;
     Size imageSize;
 
-    std::vector<double> invertDistanceCoefficients(std::vector<double> coeffecients);
-    Point correctDistortion(Point distortedPoint);
+    std::vector<cv::RotatedRect> getPoleRectanglesOpenCV(const cv::Mat& yuv_image, uint8_t* yBuffer, uint8_t* uBuffer, uint8_t* vBuffer);
+    cv::Mat createYUVImage(uint8_t *yBuffer, uint8_t *uBuffer, uint8_t *vBuffer, int width, int height, int stride);
 
-
-
-    bool isPoleColor(uint8_t *y, uint8_t *u, uint8_t *v);
-    std::vector<PolePixelLocation> getPolePixelLocationsInRow(uint8_t* yBuffer, uint8_t* uBuffer, uint8_t* vBuffer, int row);
     std::vector<Pole> getPoles(uInt8Buffer yBufferContainer, uInt8Buffer uBufferContainer, uInt8Buffer vBufferContainer);
 
+    double getAngleOfPoint(cv::Point2f point, cv::Point2f center);
     std::vector<Point> getIntercepts(double poleDistances[]);
+    std::vector<Pole> getPoleStates(std::vector<cv::RotatedRect> poleRectangles, const cv::Mat& image);
+    void preprocessImage(const cv::Mat& yuvImage, cv::Mat& outPreprocessed);
     Transform getTransform(std::vector<Pole> poles);
 
 public:

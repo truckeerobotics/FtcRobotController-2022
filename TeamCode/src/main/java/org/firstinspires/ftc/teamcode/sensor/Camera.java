@@ -130,6 +130,11 @@ public class Camera {
         return imageReader.acquireLatestImage();
     }
 
+    public void shutdown() {
+        cameraDevice.close();
+        telemetry.clear();
+    }
+
     /// --------------------------------------------------------------------------- ///
     /// Callbacks ///
     /// --------------------------------------------------------------------------- ///
@@ -158,20 +163,20 @@ public class Camera {
                 ImageAcquired = telemetry.addData("New Image Acquired At","NULL");
             }
             ImageAcquired.setValue(latestImage.getTimestamp());
-            telemetry.addData("Image", "New Image has been collected");
-            telemetry.update();
+            //telemetry.addData("Image", "New Image has been collected");
+            //telemetry.update();
 
-            telemetry.addData("Callback","Prep");
-            telemetry.update();
+            //telemetry.addData("Callback","Prep");
+            //telemetry.update();
             for (CameraCallback callback: cameraCallbacks) {
-                telemetry.addData("Callback","Calling callback");
-                telemetry.update();
+                //telemetry.addData("Callback","Calling callback");
+                //telemetry.update();
                 callback.imageReadyCallback(latestImage);
-                telemetry.addData("Callback", "Finished Calling Callback");
-                telemetry.update();
+                //telemetry.addData("Callback", "Finished Calling Callback");
+                //telemetry.update();
             }
-            telemetry.addData("Callback","Finish callback");
-            telemetry.update();
+            //telemetry.addData("Callback","Finish callback");
+            //telemetry.update();
             latestImage.close();
         }
     };
@@ -194,8 +199,8 @@ public class Camera {
             telemetry.addData("Capture", "Session Configured!");
             telemetry.update();
             try {
-                //captureSession.setRepeatingRequest(captureSessionRequestBuilder.build(), imageCaptureCallback, threadHandler);
-                captureSession.capture(captureSessionRequestBuilder.build(), imageCaptureCallback, threadHandler);
+                captureSession.setRepeatingRequest(captureSessionRequestBuilder.build(), imageCaptureCallback, threadHandler);
+                //captureSession.capture(captureSessionRequestBuilder.build(), imageCaptureCallback, threadHandler);
             } catch (CameraAccessException exception) {
                 telemetry.addData("Failed", "CameraAccessException Exception");
                 telemetry.addData("Failed to Start Capture!", exception);
