@@ -87,6 +87,8 @@ public class Driver {
 
             arm.setPower(opmode.gamepad2.left_stick_y);
 
+            //jake stinky
+
             double x = opmode.gamepad1.left_stick_x * 1.1;
             double y = -opmode.gamepad1.left_stick_y;
             double rx = opmode.gamepad1.right_stick_x;
