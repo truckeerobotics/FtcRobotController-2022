@@ -11,6 +11,9 @@
 
 #include "imageBuffers.h"
 #include "logger.h"
+#include "opencv2/opencv.hpp"
+
+
 
 
 
@@ -28,13 +31,6 @@ struct Size {
     Size() {x=0; y=0;};
 };
 
-struct DetectionZone {
-    Point start;
-    Point end;
-    DetectionZone(Point start, Point end) {this->start = start; this->end = end;};
-    DetectionZone() {start = Point(); end = Point();};
-};
-
 // Color bounds for YUV (Y: Brightness, U & V: Color). xy = uv
 struct ColorBox {
     int uStart;
@@ -48,37 +44,18 @@ struct ColorBox {
     ColorBox();
 };
 
-struct SleeveDetectionResult{
-    SleeveDetectionResult(int level, float confidence);
-
-    int level = -1;
-    float confidence = 0.0f;
-};
 
 
 class SignalSleeveDetection {
 private:
-    DetectionZone detectionZone;
-    ColorBox* colorBoxes; // 3 items
+    JNIEnv* env;
     Size imageSize;
 
 public:
-    SignalSleeveDetection(ColorBox colorBoxes[], DetectionZone detectionZone, Size imageSize, int colorBytePerPixel, JNIEnv* env);
+    SignalSleeveDetection(Size imageSize, JNIEnv* env);
 
-    int getColorSignalSide(uint8_t *y, uint8_t *u, uint8_t *v);
+    int detectSignalSide(uInt8Buffer brightnessDataContainer, uInt8Buffer uColorDataContainer, uInt8Buffer vColorDataContainer);
 
-    SleeveDetectionResult detectSignalSide(uInt8Buffer brightnessDataContainer, uInt8Buffer uColorDataContainer, uInt8Buffer vColorDataContainer);
-
-    // 2 for yuv 420_888; 420 = 4:2, so 2 brightness pixels per color, _888 = 8 bits = 1 byte. So every 2 pixels is a new color byte.
-    int bytePerPixel;
-
-    // Variables computed in the constructor from detection zone and image sizes, used in primary color counter loop.
-    int startBufferIndex;
-    int endBufferIndex;
-    int repeatRowBufferIndex;
-    int addToRepeatRow;
-
-    JNIEnv* env;
 };
 
 

@@ -16,8 +16,7 @@
 #include <fstream>
 #include <cmath>
 
-//ColorBox(Point(50,180), Point(102, 150), 10, 240);
-static ColorBox poleColorBox = ColorBox(Point(25,200), Point(105, 130), 10, 240);
+
 static int bytePerPixel = 2;
 // How many pixels before a pole is considered finished
 static int poleContinuityTolerance = 4;
@@ -39,13 +38,15 @@ struct Pole {
     double heading;
 };
 
+static cv::Mat createYUVImage(uint8_t *yBuffer, uint8_t *uBuffer, uint8_t *vBuffer, int width, int height, int stride);
+
 class TransformLocator{
 private:
     JNIEnv *env;
     Size imageSize;
 
     std::vector<cv::RotatedRect> getPoleRectanglesOpenCV(const cv::Mat& yuv_image, uint8_t* yBuffer, uint8_t* uBuffer, uint8_t* vBuffer);
-    cv::Mat createYUVImage(uint8_t *yBuffer, uint8_t *uBuffer, uint8_t *vBuffer, int width, int height, int stride);
+
 
     std::vector<Pole> getPoles(uInt8Buffer yBufferContainer, uInt8Buffer uBufferContainer, uInt8Buffer vBufferContainer);
 

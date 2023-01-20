@@ -97,8 +97,8 @@ public class Robot extends LinearOpMode {
             return byteBufferArray;
         }
         public void imageReadyCallback(Image latestImage) {
-            telemetry.addData("Camera Processor", "Running");
-            telemetry.update();
+            //telemetry.addData("Camera Processor", "Running");
+            //telemetry.update();
             Image.Plane[] imagePlanes = latestImage.getPlanes();
             byte[] yBuffer = planeToByteBuffer(imagePlanes[0]);
             byte[] uBuffer = planeToByteBuffer(imagePlanes[1]);
@@ -106,8 +106,8 @@ public class Robot extends LinearOpMode {
             yuvImageSaveJPEG(latestImage);
             passImageBuffers(yBuffer,uBuffer,vBuffer);
             getTransform();
-            //String sleeveLevel = getSleeveLevel();
-            //telemetry.addData("Sleeve Level", sleeveLevel);
+            String sleeveLevel = getSleeveLevel();
+            telemetry.addData("Sleeve Level", sleeveLevel);
 //            telemetry.update();
 //
 //            String bufferUnsignedInt8 = "";
@@ -133,8 +133,8 @@ public class Robot extends LinearOpMode {
 
 
 
-            telemetry.addData("IMAGE", "Finished writing image to jpeg");
-            telemetry.update();
+            //telemetry.addData("IMAGE", "Finished writing image to jpeg");
+            //telemetry.update();
         };
     };
 

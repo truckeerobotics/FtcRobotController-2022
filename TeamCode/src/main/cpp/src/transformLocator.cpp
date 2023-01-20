@@ -121,8 +121,8 @@ std::vector<Pole> TransformLocator::getPoleStates(std::vector<cv::RotatedRect> p
         circle(image, botPoint, 4, cv::Scalar(0, 0, 255), 0.15);
         //circle(image, centerPoint, 7, cv::Scalar(0, 255, 255), 0.15);
         double poleWidth = abs(getAngleOfPoint(botRightPoint, centerPoint)-getAngleOfPoint(botLeftPoint, centerPoint))/2;
-        double poleWidthRadians = M_PI / poleWidth;
-        double poleDistance = 0.5/sin(poleWidthRadians);
+        double poleWidthRadians = poleWidth * (M_PI / 180);
+        double poleDistance = 0.5/sin(poleWidthRadians/2);
 
         cv::Point textAnglePoint(botPoint.x, botPoint.y);
         cv::Scalar textColor(0, 0, 255);
@@ -130,13 +130,13 @@ std::vector<Pole> TransformLocator::getPoleStates(std::vector<cv::RotatedRect> p
                     textAnglePoint,
                     cv::FONT_HERSHEY_SIMPLEX, 0.5, textColor, 1, cv::LINE_8);
 
-        cv::Point textWidthPoint(botPoint.x+50, botPoint.y+50);
+        cv::Point textWidthPoint(botPoint.x, botPoint.y-30);
         cv::Scalar textColor2(0, 255, 255);
         cv::putText(image, std::to_string(poleWidth),
                     textWidthPoint,
                     cv::FONT_HERSHEY_SIMPLEX, 0.5, textColor2, 1, cv::LINE_8);
 
-        cv::Point textWidthPoint2(botPoint.x+100, botPoint.y+100);
+        cv::Point textWidthPoint2(botPoint.x, botPoint.y-60);
         cv::Scalar textColor3(255, 255, 255);
         cv::putText(image, std::to_string(poleDistance),
                     textWidthPoint2,
@@ -244,7 +244,7 @@ double TransformLocator::getAngleOfPoint(cv::Point2f point, cv::Point2f center){
     return angle;
 }
 
-cv::Mat TransformLocator::createYUVImage(uint8_t *yBuffer, uint8_t *uBuffer, uint8_t *vBuffer, int width, int height, int stride) {
+cv::Mat createYUVImage(uint8_t *yBuffer, uint8_t *uBuffer, uint8_t *vBuffer, int width, int height, int stride) {
 
     int uvRows = height / 2;
     int uvCols = width / 2;
