@@ -37,7 +37,7 @@ int SignalSleeveDetection::detectSignalSide(uInt8Buffer brightnessDataContainer,
     //cv::Mat testImage = imread("/storage/emulated/0/FIRST/Test_QRcode.png", cv::IMREAD_COLOR);
 
     // Default tag family (type)
-    TagFamily tagFamily("Tag36h11");
+    //TagFamily tagFamily("Tag36h11");
 
     //TagDetector tagDetector(tagFamily);
 
