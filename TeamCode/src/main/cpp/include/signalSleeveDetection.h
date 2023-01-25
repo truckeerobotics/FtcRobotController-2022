@@ -12,6 +12,7 @@
 #include "imageBuffers.h"
 #include "logger.h"
 #include "opencv2/opencv.hpp"
+#include "TagDetector.h"
 
 
 

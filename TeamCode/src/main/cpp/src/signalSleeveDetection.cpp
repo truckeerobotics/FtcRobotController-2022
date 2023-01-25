@@ -31,22 +31,17 @@ int SignalSleeveDetection::detectSignalSide(uInt8Buffer brightnessDataContainer,
     cv::Mat bgrMat(yuvMat.size(), CV_8UC3);
     cv::cvtColor(yuvMat, bgrMat, cv::COLOR_YUV2BGR);
 
-    cv::QRCodeDetector qrDecoder = cv::QRCodeDetector();
+    imwrite("/storage/emulated/0/FIRST/qr_code_image.jpg", bgrMat);
 
-    cv::Mat boundingBox, rectifiedImage;
-    std::string data = qrDecoder.detectAndDecode(bgrMat, boundingBox, rectifiedImage);
+    // test
+    //cv::Mat testImage = imread("/storage/emulated/0/FIRST/Test_QRcode.png", cv::IMREAD_COLOR);
 
+    // Default tag family (type)
+    TagFamily tagFamily("Tag36h11");
 
-    javaLog(data, env);
-    if (data == "RED") {
-        return 1;
-    } else if(data == "Green") {
-        return 2;
-    } else if (data == "BLUE") {
-        return 3;
-    } else {
-        return -1
-    }
+    //TagDetector tagDetector(tagFamily);
+
+    return 0;
 
 }
 

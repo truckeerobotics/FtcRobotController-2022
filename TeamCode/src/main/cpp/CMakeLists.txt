@@ -42,18 +42,7 @@ add_library( # Sets the name of the library.
 
 
 
-##set(OPENCV_DIRS ${CMAKE_SOURCE_DIR}/../../../../sdk/native/jni/${ANDROID_ABI}/OpenCVConfig.cmake)
-#set(OPENCV_DIRS /Users/alex/StudioProjects/FtcRobotController-2022/sdk/native/jni/abi-${ANDROID_ABI}/OpenCVConfig.cmake)
-##set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/../../../../sdk/native/jni/${ANDROID_ABI}/OpenCVConfig.cmake)
-#message("PATH: ${OPENCV_DIRS}")
-#
-#find_package(OpenCV 4.6 REQUIRED java)
-
-
-
-
-
-
+# Open CV
 set(CMAKE_VERBOSE_MAKEFILE on)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 include_directories(${CMAKE_SOURCE_DIR}/third_party/opencv/includes/)
@@ -65,7 +54,10 @@ add_library(lib_opencv SHARED IMPORTED)
 
 set_target_properties(lib_opencv PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/third_party/opencv/libs/${ANDROID_ABI}/libopencv_java4.so)
 
+# Open CV april tags
 
+add_subdirectory(third_party/apriltags)
+include_directories(third_party/apriltags/src)
 
 
 

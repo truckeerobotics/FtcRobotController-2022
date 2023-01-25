@@ -56,25 +56,27 @@ TransformLocator::getPoles(uInt8Buffer yBufferContainer, uInt8Buffer uBufferCont
 }
 
 void TransformLocator::preprocessImage(const cv::Mat& yuvImage, cv::Mat& outPreprocessed) {
-    cv::Mat bgr_image(yuvImage.size(), CV_8UC3);
-    cv::cvtColor(yuvImage, bgr_image, cv::COLOR_YUV2BGR);
+    cv::Mat brgImage(yuvImage.size(), CV_8UC3);
+    cv::cvtColor(yuvImage, brgImage, cv::COLOR_YUV2BGR);
 
     // Calibrated using a python program to take images on a chess board, then using opencv in python to find the distortion & generate matrix + dist coeffecients
     cv::Mat cameraMatrix = (cv::Mat_<double>(3,3) << 6225.7109, 0, 449.1818, 0, 5631.2393, 358.5682, 0, 0, 1);
     cv::Mat distCoeffs = (cv::Mat_<double>(5,1) << 1.4039, 14.6769, -0.0071, -0.1362, -123.2744);
 
-    cv::Mat undistorted_brg;
-    cv::undistort(bgr_image, undistorted_brg, cameraMatrix, distCoeffs);
+    cv::Mat rgbUndistored;
+    cv::undistort(brgImage, rgbUndistored, cameraMatrix, distCoeffs);
 
     // After undistortion some pixels become invalid as the image has been changed, this compensates.
     // These constants are from the same python code used to create the matrix & dist constants.
     cv::Rect regionOfInterest(22, 19, 1876/2, 1030/2);
-    cv::Mat undistorted_roi_brg = undistorted_brg(regionOfInterest);
+    cv::Mat brgUndistortedROI = rgbUndistored(regionOfInterest);
 
     cv::Mat testPreprocess;
-    outPreprocessed = cv::Mat(undistorted_roi_brg.size(), CV_8UC3);
+    outPreprocessed = cv::Mat(brgUndistortedROI.size(), CV_8UC3);
     // Convert the BGR image to a HSV image
-    cv::cvtColor(undistorted_roi_brg, outPreprocessed, cv::COLOR_BGR2HSV);
+    cv::cvtColor(brgUndistortedROI, outPreprocessed, cv::COLOR_BGR2HSV);
+
+    /// OPTIONAL ///
 
     // Balance the brightness, replace the original hsv image
 //    std::vector<cv::Mat> channels;
@@ -84,9 +86,11 @@ void TransformLocator::preprocessImage(const cv::Mat& yuvImage, cv::Mat& outPrep
 //
 //    cv::merge(channels, hsv_image);
 
-//    // Apply Gaussian blur to the image
+    // Apply Gaussian blur to the image
 //    cv::GaussianBlur(hsv_image, hsv_image, cv::Size(5, 5), 0);
-//
+
+    /// OPTIONAL ///
+
     // Erode the image
     cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5));
     cv::erode(outPreprocessed, outPreprocessed, kernel);

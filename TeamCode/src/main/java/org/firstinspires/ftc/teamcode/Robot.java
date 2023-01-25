@@ -40,9 +40,9 @@ public class Robot extends LinearOpMode {
         System.loadLibrary("Nova");
     }
 //
-    public native String getSleeveLevel();
-    public native void getTransform();
-    public native void passImageBuffers(byte[] bufferY, byte[] bufferU, byte[] bufferV);
+    public static native int getSleeveLevel();
+    public static native void getTransform();
+    public static native void passImageBuffers(byte[] bufferY, byte[] bufferU, byte[] bufferV);
 
     private CameraController cameraController;
 
@@ -105,8 +105,8 @@ public class Robot extends LinearOpMode {
             byte[] vBuffer = planeToByteBuffer(imagePlanes[2]);
             yuvImageSaveJPEG(latestImage);
             passImageBuffers(yBuffer,uBuffer,vBuffer);
-            getTransform();
-            String sleeveLevel = getSleeveLevel();
+            //getTransform();
+            int sleeveLevel = getSleeveLevel();
             telemetry.addData("Sleeve Level", sleeveLevel);
 //            telemetry.update();
 //
@@ -138,14 +138,11 @@ public class Robot extends LinearOpMode {
         };
     };
 
-    public void yuvImageSaveJPEG(Image newImage) {
+    public static void yuvImageSaveJPEG(Image newImage) {
         byte[] data = YUV420toNV21(newImage);
         byte[] RGBBytes = NV21toJPEG(data, newImage.getWidth(), newImage.getHeight(), 100);
 
         String path = Environment.getExternalStorageDirectory() + "/FIRST/JPEG_FROM_YUV.jpeg";
-
-        telemetry.addData("PATH", path);
-        telemetry.update();
 
         FileOutputStream fileOutputStream = null;
         try
@@ -178,14 +175,14 @@ public class Robot extends LinearOpMode {
         }
     }
 
-    public byte[] NV21toJPEG(byte[] nv21, int width, int height, int quality) {
+    public static byte[] NV21toJPEG(byte[] nv21, int width, int height, int quality) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         YuvImage yuv = new YuvImage(nv21, ImageFormat.NV21, width, height, null);
         yuv.compressToJpeg(new Rect(0, 0, width, height), quality, out);
         return out.toByteArray();
     }
 
-    public byte[] YUV420toNV21(Image image) {
+    public static byte[] YUV420toNV21(Image image) {
 
         Rect crop = image.getCropRect();
         int format = image.getFormat();

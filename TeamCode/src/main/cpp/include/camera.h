@@ -21,13 +21,13 @@
 
 
 extern "C" JNIEXPORT void JNICALL
-Java_org_firstinspires_ftc_teamcode_Robot_passImageBuffers(JNIEnv *env, jobject obj, jbyteArray bufferY, jbyteArray bufferU, jbyteArray bufferV);
+Java_org_firstinspires_ftc_teamcode_Robot_passImageBuffers(JNIEnv *env, jclass obj, jbyteArray bufferY, jbyteArray bufferU, jbyteArray bufferV);
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_org_firstinspires_ftc_teamcode_Robot_getSleeveLevel(JNIEnv *env, jobject obj);
+extern "C" JNIEXPORT jint JNICALL
+Java_org_firstinspires_ftc_teamcode_Robot_getSleeveLevel(JNIEnv *env, jclass obj);
 
 extern "C" JNIEXPORT void JNICALL
-Java_org_firstinspires_ftc_teamcode_Robot_getTransform(JNIEnv *env, jobject obj);
+Java_org_firstinspires_ftc_teamcode_Robot_getTransform(JNIEnv *env, jclass obj);
 
 #endif //FTCROBOTCONTROLLER_2022_CAMERA_H
 

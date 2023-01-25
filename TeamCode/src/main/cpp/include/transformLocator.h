@@ -38,7 +38,7 @@ struct Pole {
     double heading;
 };
 
-static cv::Mat createYUVImage(uint8_t *yBuffer, uint8_t *uBuffer, uint8_t *vBuffer, int width, int height, int stride);
+cv::Mat createYUVImage(uint8_t *yBuffer, uint8_t *uBuffer, uint8_t *vBuffer, int width, int height, int stride);
 
 class TransformLocator{
 private:

@@ -134,9 +134,9 @@ public class Driver {
 
         DriverInput input = new DriverInput(opmode.gamepad1, opmode.gamepad2);
         while (!opmode.isStopRequested()) {
-            double x = opmode.gamepad1.left_stick_x*0.6;
-            double y = opmode.gamepad1.left_stick_y*0.6;
-            double rx = -opmode.gamepad1.right_stick_x*0.6;
+            double x = opmode.gamepad1.left_stick_x*0.7;
+            double y = opmode.gamepad1.left_stick_y*0.7;
+            double rx = -opmode.gamepad1.right_stick_x*0.7;
 
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
             double frontLeftPower = (y + x + rx) / denominator;
