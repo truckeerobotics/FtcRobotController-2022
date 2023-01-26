@@ -59,6 +59,7 @@ set_target_properties(lib_opencv PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR
 add_subdirectory(third_party/apriltags)
 include_directories(third_party/apriltags/src)
 
+#add_library(apriltags SHARED IMPORTED)
 
 
 find_library( # Sets the name of the path variable.
@@ -78,7 +79,7 @@ target_link_libraries( # Specifies the target library.
 
                        # Links the target library to the log library
                        # included in the NDK.
-                       ${log-lib} ${log-lib} lib_opencv) #tflite
+                       ${log-lib} ${log-lib} lib_opencv apriltags) #tflite
 #target_link_libraries(native-lib ${OpenCV_LIBRARIES})
 
 

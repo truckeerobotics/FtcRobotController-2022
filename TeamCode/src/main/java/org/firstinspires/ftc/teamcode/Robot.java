@@ -47,8 +47,7 @@ public class Robot extends LinearOpMode {
     private CameraController cameraController;
 
     public void runOpMode() throws InterruptedException {
-        String cameraNameFront = hardwareMap.get("FrontCamera").getDeviceName();
-        telemetry.addData("Device Name", cameraNameFront);
+
         telemetry.setAutoClear(false);
         appContext = hardwareMap.appContext;
 

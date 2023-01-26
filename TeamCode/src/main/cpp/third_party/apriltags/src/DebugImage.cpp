@@ -111,8 +111,8 @@ void labelAndWaitForKey(const std::string& window,
 
   labelImage(rescaled, text);
   
-  cv::imshow(window, rescaled);
-  cv::waitKey();
+  //cv::imshow(window, rescaled);
+  //cv::waitKey();
 
 
 }

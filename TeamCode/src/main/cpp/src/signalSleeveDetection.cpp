@@ -37,9 +37,34 @@ int SignalSleeveDetection::detectSignalSide(uInt8Buffer brightnessDataContainer,
     //cv::Mat testImage = imread("/storage/emulated/0/FIRST/Test_QRcode.png", cv::IMREAD_COLOR);
 
     // Default tag family (type)
-    //TagFamily tagFamily("Tag36h11");
+    TagFamily tagFamily("Tag36h11");
 
-    //TagDetector tagDetector(tagFamily);
+    TagDetector tagDetector(tagFamily);
+
+    cv::Point2d opticalCenter(bgrMat.rows, bgrMat.cols);
+
+    TagDetectionArray tagDetections;
+    tagDetector.process(bgrMat, opticalCenter, tagDetections);
+
+
+    javaLog("Detection START", env);
+
+    for (size_t i=0; i<tagDetections.size(); ++i) {
+        const TagDetection& tagDetection = tagDetections[i];
+
+        if (tagDetection.good == true) {
+            at::code_t tagId = tagDetection.id;
+            if (tagId == 1) {
+                return 1;
+            } else if (tagId == 2) {
+                return 2;
+            } else if (tagId == 3) {
+                return 3;
+            }
+        };
+    }
+    
+    javaLog("Detection END", env);
 
     return 0;
 
