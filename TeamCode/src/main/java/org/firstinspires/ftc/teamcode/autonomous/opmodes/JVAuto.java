@@ -11,9 +11,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Robot2;
+import org.firstinspires.ftc.teamcode.movement.Movement;
 import org.firstinspires.ftc.teamcode.other.NativeLogging;
 import org.firstinspires.ftc.teamcode.sensor.Camera;
 import org.firstinspires.ftc.teamcode.sensor.CameraController;
+import org.firstinspires.ftc.teamcode.sensor.Encoder;
 
 import java.nio.ByteBuffer;
 
@@ -28,11 +30,32 @@ public class JVAuto extends LinearOpMode {
     DcMotor motorBackLeft;
     DcMotor motorFrontRight;
     DcMotor motorBackRight;
+
+    Encoder motorBackLeftEncoder;
+    Encoder motorBackRightEncoder;
+    Encoder motorFrontLeftEncoder;
+    Encoder motorFrontRightEncoder;
+
+    public boolean debug = false;
+
+
+
     public void runOpMode() throws InterruptedException{
         motorFrontLeft = hardwareMap.dcMotor.get("mFL");
         motorBackLeft = hardwareMap.dcMotor.get("mBL");
         motorFrontRight = hardwareMap.dcMotor.get("mFR");
         motorBackRight = hardwareMap.dcMotor.get("mBR");
+
+        double modification_value = 0.06;
+
+        this.motorBackLeftEncoder = new Encoder(motorBackLeft, modification_value);
+        this.motorBackRightEncoder = new Encoder(motorBackRight, modification_value);
+        this.motorFrontLeftEncoder = new Encoder(motorFrontLeft, modification_value);
+        this.motorFrontRightEncoder = new Encoder(motorFrontRight, modification_value);
+
+        Encoder[] encoderArray = {motorBackLeftEncoder, motorBackRightEncoder, motorFrontLeftEncoder, motorFrontRightEncoder};
+
+
 
         motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBackLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -58,61 +81,22 @@ public class JVAuto extends LinearOpMode {
         Camera frontCamera = cameraController.getCamera("0");
         frontCamera.addCallbacks(cameraCallback);
 
-        setMotorsForwards(0.5f);
-
-        telemetry.addData("Log: ", "Set Forward");
-        telemetry.update();
-
-        wait(0.97f);
-
-        stopMotors();
-
         wait(5f);
-
-        // turn -0.5
-        setMotorsTurn(-0.5f);
-        wait(0.25f);
-        stopMotors();
-
-        wait(5f);
-
-        // turn 1
-        setMotorsTurn(0.5f);
-        wait(0.5f);
-        stopMotors();
-
-        wait(5f);
-
-        //Turn -0.5
-        setMotorsTurn(-0.5f);
-        wait(0.25f);
-        stopMotors();
-
-        if (sleeveLevel == 0) {
-            telemetry.addData("Log: ", "No result, waiting");
-            telemetry.update();
-
-            wait(4f);
-        }
-
-        setMotorsForwards(0.5f);
-        wait(0.8f);
-        stopMotors();
-
-
-
-        telemetry.addData("Log: ", "Camera Shutdown");
-        telemetry.update();
-
         frontCamera.shutdown();
+
+        double[] forwardSpeedArray = new double[]{-1, 1, -1, 1};
+
+        driveInches(10, encoderArray, forwardSpeedArray, 0.5);
+
+        wait(0.5f);
+
+        double[] strafeSpeedArray = new double[]{-1, -1, 1, 1};
+
         if (sleeveLevel == 3) {
-            setMotorsStrafe(0.5f);
-            wait(1.5f);
-            stopMotors();
+            driveInches(10, encoderArray, forwardSpeedArray, 0.5);
+
         } else if (sleeveLevel == 1) {
-            setMotorsStrafe(-0.5f);
-            wait(1.5f);
-            stopMotors();
+            driveInches(10, encoderArray, forwardSpeedArray, -0.5);
         }
 
     }
@@ -183,4 +167,34 @@ public class JVAuto extends LinearOpMode {
             }
         };
     };
+
+    private Boolean checkEncoders(Encoder[] encoders, int inches){
+        Boolean running = true;
+        if(debug){
+            telemetry.addData("STATUS", "Encoder debug");
+            telemetry.addData("Target", inches);
+        }
+        for(int i=0; i<encoders.length; i++){
+            if(encoders[i].getDifference() > inches){
+                running = false;
+            }
+            if(debug){
+                telemetry.addData(i + "", encoders[i].getDifference());
+            }
+        }
+        telemetry.update();
+        return running;
+    }
+
+    private void driveInches(int inches, Encoder[] encoders, double[] speeds, double speed){
+        for(int i=0; i<encoders.length; i++){
+            encoders[i].reset();
+        }
+        while(checkEncoders(encoders, inches) && !isStopRequested()) {
+            motorBackLeft.setPower(speeds[0] *speed);
+            motorBackRight.setPower(speeds[1] *speed);
+            motorFrontLeft.setPower(speeds[2] *speed);
+            motorFrontRight.setPower(speeds[3] *speed);
+        }
+    }
 }

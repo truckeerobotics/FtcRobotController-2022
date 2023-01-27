@@ -1,14 +1,24 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import static org.firstinspires.ftc.teamcode.Robot.getSleeveLevel;
+import static org.firstinspires.ftc.teamcode.Robot.passImageBuffers;
+import static org.firstinspires.ftc.teamcode.Robot.yuvImageSaveJPEG;
+
 import android.app.Activity;
 import android.graphics.Color;
+import android.media.Image;
 import android.view.View;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
 import org.firstinspires.ftc.teamcode.movement.Movement;
+import org.firstinspires.ftc.teamcode.other.NativeLogging;
+import org.firstinspires.ftc.teamcode.sensor.Camera;
+import org.firstinspires.ftc.teamcode.sensor.CameraController;
 import org.firstinspires.ftc.teamcode.sensor.Encoder;
+
+import java.nio.ByteBuffer;
 
 public class Autonomous {
     LinearOpMode opmode;
@@ -17,6 +27,10 @@ public class Autonomous {
     Encoder motorBackRightEncoder;
     Encoder motorFrontLeftEncoder;
     Encoder motorFrontRightEncoder;
+
+    private CameraController cameraController;
+
+    int sleeveLevel = 0;
 
     public Autonomous(LinearOpMode opmode){
         this.opmode = opmode;
@@ -29,58 +43,31 @@ public class Autonomous {
 
 
     public void camera(){
-        ColorSensor colorSensor;
-        float hsvValues[] = {0F,0F,0F};
 
-        colorSensor = opmode.hardwareMap.get(ColorSensor.class, "sensor_color");
+
+
+        NativeLogging.initNativeLogging(opmode.telemetry);
+        opmode.telemetry.setAutoClear(false);
 
         opmode.telemetry.addData("STATUS", "Waiting for start");
         opmode.telemetry.update();
         opmode.waitForStart();
 
+        cameraController = new CameraController();
+        cameraController.init(opmode.hardwareMap.appContext, opmode.telemetry);
+
+        Camera frontCamera = cameraController.getCamera("0");
+        frontCamera.addCallbacks(cameraCallback);
+
+        while (!opmode.isStopRequested() && opmode.getRuntime() < 5) {
+
+        }
+
+        frontCamera.shutdown();
+
         Encoder[] encoderArray = {motorBackLeftEncoder, motorBackRightEncoder, motorFrontLeftEncoder, motorFrontRightEncoder};
 
-
-        move.driveInches(21, 0.50, encoderArray);
-        move.stop();
-
-        opmode.resetRuntime();
-        int[] colors = new int[3];
-        while(opmode.getRuntime() < 5.0 && !opmode.isStopRequested()) {
-            Color.RGBToHSV(colorSensor.red() * 8, colorSensor.green() * 8, colorSensor.blue() * 8, hsvValues);
-
-            String color = "NO COLOR";
-
-            if (colorSensor.blue() > colorSensor.green() && colorSensor.blue() > colorSensor.red()) {
-                color = "blue";
-                colors[0]++;
-            } else if (colorSensor.green() > colorSensor.red() && colorSensor.green() > colorSensor.blue()) {
-                color = "green";
-                colors[1]++;
-            } else if (colorSensor.red() > colorSensor.green() && colorSensor.red() > colorSensor.blue()) {
-                color = "orange";
-                colors[2]++;
-            }
-
-            opmode.telemetry.addData("STATUS", "Doing color scan");
-            opmode.telemetry.addData("Red  ", colorSensor.red());
-            opmode.telemetry.addData("Green", colorSensor.green());
-            opmode.telemetry.addData("Blue ", colorSensor.blue());
-            opmode.telemetry.addData("color", color);
-
-            opmode.telemetry.update();
-        }
-
-        int highest = Integer.MIN_VALUE;
-        int highestIndex = -1;
-        for(int i=0; i<colors.length; i++){
-            if(colors[i] > highest){
-                highest = colors[i];
-                highestIndex = i;
-            }
-        }
-
-        move.driveInches(32,  0.75, encoderArray);
+        move.driveInches(50, 0.75, encoderArray);
         move.stop();
 
         opmode.resetRuntime();
@@ -90,29 +77,50 @@ public class Autonomous {
         }
 
         opmode.resetRuntime();
-        while(opmode.getRuntime() < .5 && !opmode.isStopRequested()){
-            opmode.telemetry.addData("STATUS", "backingup...");
-            opmode.telemetry.update();
-            move.driveForward(-0.4);
-        }
+        while(opmode.getRuntime() < 4 && !opmode.isStopRequested()){
+            opmode.telemetry.addData("LEVEL", sleeveLevel);
 
-        opmode.resetRuntime();
-        while(opmode.getRuntime() < 3 && !opmode.isStopRequested()){
-            if(highestIndex == 0){
-                opmode.telemetry.addData("STATUS", "moving left");
-                opmode.telemetry.addData("LEVEL", highestIndex);
-                move.strafeLeft(0.7);
-            }else if(highestIndex == 1){
-                opmode.telemetry.addData("STATUS", "not moving");
-                opmode.telemetry.addData("LEVEL", highestIndex);
-                //we dont need to move lol
-            }else if(highestIndex == 2){
-                opmode.telemetry.addData("STATUS", "moving right");
-                opmode.telemetry.addData("LEVEL", highestIndex);
-                move.strafeLeft(-0.7);
+            if(sleeveLevel == 1){
+                move.strafeLeft(-0.5);
+            } else if(sleeveLevel == 3){
+                move.strafeLeft(0.5);
+
+
             }
             opmode.telemetry.update();
         }
         move.stop();
     }
+
+    Camera.CameraCallback cameraCallback = new Camera.CameraCallback() {
+        public void openCallback() {
+
+        };
+        public void failedCallback(int error) {
+
+        };
+        private byte[] planeToByteBuffer(Image.Plane plane) {
+            ByteBuffer byteBuffer = plane.getBuffer();
+            byte[] byteBufferArray = new byte[byteBuffer.remaining()];
+            byteBuffer.get(byteBufferArray);
+            return byteBufferArray;
+        }
+        public void imageReadyCallback(Image latestImage) {
+            opmode.telemetry.addData("Camera Processor", "Running");
+            opmode.telemetry.update();
+            Image.Plane[] imagePlanes = latestImage.getPlanes();
+            byte[] yBuffer = planeToByteBuffer(imagePlanes[0]);
+            byte[] uBuffer = planeToByteBuffer(imagePlanes[1]);
+            byte[] vBuffer = planeToByteBuffer(imagePlanes[2]);
+
+            yuvImageSaveJPEG(latestImage);
+            passImageBuffers(yBuffer,uBuffer,vBuffer);
+            int detectedSleeveLevel = getSleeveLevel();
+            if (detectedSleeveLevel != -1) {
+                opmode.telemetry.addData("Log: ", "SLEEVE LEVEL DETECTED");
+                opmode.telemetry.update();
+                sleeveLevel = detectedSleeveLevel;
+            }
+        };
+    };
 }

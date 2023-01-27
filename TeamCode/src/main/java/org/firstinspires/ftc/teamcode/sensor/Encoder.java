@@ -14,9 +14,14 @@ public class Encoder {
     private static final double COUNTS_PER_MOTOR_REV = 4;
     private static final double DRIVE_GEAR_REDUCTION = 0.083;
     private static final double WHEEL_DIAMETER_INCHES = 3;
-    public static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
-    
-    public Encoder(DcMotor motor){
+    public double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
+
+
+    public Encoder(DcMotor motor, double modification_value){
+        if (modification_value != -1) {
+            COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * modification_value) / (WHEEL_DIAMETER_INCHES * 3.1415);
+        }
+
 //        if(encoderArray.size() != 4){
 //            encoderArray.add(this);
 //        }
@@ -24,6 +29,11 @@ public class Encoder {
         this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         startingPos = (int) (motor.getCurrentPosition() * COUNTS_PER_INCH);
+
+    }
+
+    public Encoder(DcMotor motor) {
+        this(motor, -1);
     }
 
     public int getDifference(){

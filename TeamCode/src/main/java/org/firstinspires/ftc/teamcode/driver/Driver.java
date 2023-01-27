@@ -148,12 +148,28 @@ public class Driver {
         motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
         motorBackRight.setDirection(DcMotor.Direction.REVERSE);
 
+        DriverInput input = new DriverInput(opmode.gamepad1, opmode.gamepad2);
+
         opmode.waitForStart();
 
+        boolean speedToggle = false;
+
         while (!opmode.isStopRequested()) {
-            double x = opmode.gamepad1.left_stick_x*0.7;
-            double y = opmode.gamepad1.left_stick_y*0.7;
-            double rx = -opmode.gamepad1.right_stick_x*0.7;
+
+
+            if(input.onPush(opmode.gamepad1.x, "controller1ButtonX")) {
+                speedToggle = !speedToggle;
+            }
+
+
+            double movementModifier = 0.7;
+            if (speedToggle == true) {
+                movementModifier = 1;
+            }
+
+            double x = opmode.gamepad1.left_stick_x*movementModifier;
+            double y = opmode.gamepad1.left_stick_y*movementModifier;
+            double rx = -opmode.gamepad1.right_stick_x*movementModifier;
 
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
             double frontLeftPower = (y + x + rx) / denominator;
