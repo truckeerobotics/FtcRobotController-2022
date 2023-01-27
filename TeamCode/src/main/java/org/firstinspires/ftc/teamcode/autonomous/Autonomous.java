@@ -71,7 +71,7 @@ public class Autonomous {
         move.stop();
 
         opmode.resetRuntime();
-        while(opmode.getRuntime() < 3 && !opmode.isStopRequested()){
+        while(opmode.getRuntime() < 3 && !opmode.isStopRequested ()){
             opmode.telemetry.addData("STATUS", "waiting...");
             opmode.telemetry.update();
         }

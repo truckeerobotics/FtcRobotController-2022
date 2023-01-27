@@ -22,16 +22,16 @@ public class Tester {
     }
 
     public void run(){
-
-        Servo servoArm = opmode.hardwareMap.servo.get("sArm");
-
-        double num;
+        Servo coneHook = opmode.hardwareMap.servo.get("coneHook");
+        Servo armSwing = opmode.hardwareMap.servo.get("armSwing");
 
         while(!opmode.isStopRequested()){
-            num = opmode.gamepad1.left_stick_y/2;
-            servoArm.setPosition(num);
-            opmode.telemetry.addData("num", num);
-    opmode.telemetry.update();
+            opmode.telemetry.addData("cone", coneHook.getPosition());
+            opmode.telemetry.addData("arm", armSwing.getPosition());
+            opmode.telemetry.update();
+
+            coneHook.setPosition(coneHook.getPosition() + opmode.gamepad1.left_stick_y * 0.3);
+            armSwing.setPosition(armSwing.getPosition() + opmode.gamepad1.right_stick_y * 0.3);
         }
     }
 }
