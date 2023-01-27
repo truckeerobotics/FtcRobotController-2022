@@ -19,6 +19,8 @@ public class IMU {
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         // Without this, data retrieving from the IMU throws an exception
         imu.initialize(parameters);
+
+        this.imu = imu;
     }
 
     public double getHeading() {

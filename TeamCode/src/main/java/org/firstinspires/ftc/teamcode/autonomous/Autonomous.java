@@ -39,6 +39,8 @@ public class Autonomous {
         opmode.waitForStart();
 
         Encoder[] encoderArray = {motorBackLeftEncoder, motorBackRightEncoder, motorFrontLeftEncoder, motorFrontRightEncoder};
+
+
         move.driveInches(21, 0.50, encoderArray);
         move.stop();
 
@@ -78,7 +80,7 @@ public class Autonomous {
             }
         }
 
-        move.driveInches(32, 0.75, encoderArray);
+        move.driveInches(32,  0.75, encoderArray);
         move.stop();
 
         opmode.resetRuntime();
@@ -88,11 +90,18 @@ public class Autonomous {
         }
 
         opmode.resetRuntime();
-        while(opmode.getRuntime() < 4 && !opmode.isStopRequested()){
+        while(opmode.getRuntime() < .5 && !opmode.isStopRequested()){
+            opmode.telemetry.addData("STATUS", "backingup...");
+            opmode.telemetry.update();
+            move.driveForward(-0.4);
+        }
+
+        opmode.resetRuntime();
+        while(opmode.getRuntime() < 3 && !opmode.isStopRequested()){
             if(highestIndex == 0){
                 opmode.telemetry.addData("STATUS", "moving left");
                 opmode.telemetry.addData("LEVEL", highestIndex);
-                move.strafeLeft(0.5);
+                move.strafeLeft(0.7);
             }else if(highestIndex == 1){
                 opmode.telemetry.addData("STATUS", "not moving");
                 opmode.telemetry.addData("LEVEL", highestIndex);
@@ -100,74 +109,10 @@ public class Autonomous {
             }else if(highestIndex == 2){
                 opmode.telemetry.addData("STATUS", "moving right");
                 opmode.telemetry.addData("LEVEL", highestIndex);
-                move.strafeLeft(-0.5);
+                move.strafeLeft(-0.7);
             }
             opmode.telemetry.update();
         }
         move.stop();
     }
-
-    public Boolean blueLeft(){
-        opmode.waitForStart();
-        Encoder[] encoderArray = {motorBackLeftEncoder, motorBackRightEncoder, motorFrontLeftEncoder, motorFrontRightEncoder};
-        move.driveInches(12, 0.75, encoderArray);
-        return true;
-    }
-
-    public Boolean blueRight(){
-        opmode.waitForStart();
-        Encoder[] encoderArray = {motorBackLeftEncoder, motorBackRightEncoder, motorFrontLeftEncoder, motorFrontRightEncoder};
-        move.driveInches(25, 0.3, encoderArray);
-        return true;
-    }
-
-    public Boolean redLeft(){
-        opmode.waitForStart();
-        Encoder[] encoderArray = {motorBackLeftEncoder, motorBackRightEncoder, motorFrontLeftEncoder, motorFrontRightEncoder};
-        move.driveInches(25, 0.3, encoderArray);
-        return true;
-    }
-
-    public Boolean redRight(){
-        opmode.waitForStart();
-        Encoder[] encoderArray = {motorBackLeftEncoder, motorBackRightEncoder, motorFrontLeftEncoder, motorFrontRightEncoder};
-        move.driveInches(34, 0.3, encoderArray);
-        return true;
-    }
-
-//    public Boolean blueLeft(){
-//        opmode.resetRuntime();
-//        while(opmode.getRuntime() < 1.25){
-//            move.driveForward(1.0);
-//
-//        }
-//        return true;
-//    }
-//
-//    public Boolean blueRight(){
-//        opmode.resetRuntime();
-//        while(opmode.getRuntime() < 1.25){
-//            move.driveForward(1.0);
-//
-//        }
-//        return true;
-//    }
-//
-//    public Boolean redLeft(){
-//        opmode.resetRuntime();
-//        while(opmode.getRuntime() < 1.25){
-//            move.driveForward(1.0);
-//
-//        }
-//        return true;
-//    }
-//
-//    public Boolean redRight(){
-//        opmode.resetRuntime();
-//        while(opmode.getRuntime() < 1.25){
-//            move.driveForward(1.0);
-//
-//        }
-//        return true;
-//    }
 }

@@ -44,15 +44,7 @@ public class Robot2 {
             test.run();
         } else {
             Autonomous auto = new Autonomous(opmode);
-            if (type.equals("AutoBlueLeft")) {
-                auto.blueLeft();
-            } else if (type.equals("AutoBlueRight")) {
-                auto.blueRight();
-            } else if (type.equals("AutoRedLeft")) {
-                auto.redLeft();
-            } else if (type.equals("AutoRedRight")) {
-                auto.redRight();
-            }else if(type.equals("Camera")){
+            if(type.equals("Camera")){
                 auto.camera();
             }
         }

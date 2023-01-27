@@ -76,6 +76,6 @@ public class Vector2 {
 	}
 
 	public String toString(){
-		return "x: " + x + ", y: " + y;
+		return x + ", " + y;
 	}
 }

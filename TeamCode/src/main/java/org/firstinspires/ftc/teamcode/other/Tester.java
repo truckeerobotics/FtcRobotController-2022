@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -22,10 +23,15 @@ public class Tester {
 
     public void run(){
 
-        DcMotor armTop = opmode.hardwareMap.dcMotor.get("armTop");
+        Servo servoArm = opmode.hardwareMap.servo.get("sArm");
+
+        double num;
 
         while(!opmode.isStopRequested()){
-            armTop.setPower(opmode.gamepad1.left_stick_y);
+            num = opmode.gamepad1.left_stick_y/2;
+            servoArm.setPosition(num);
+            opmode.telemetry.addData("num", num);
+    opmode.telemetry.update();
         }
     }
 }

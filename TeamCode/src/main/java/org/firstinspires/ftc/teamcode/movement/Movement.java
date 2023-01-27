@@ -16,10 +16,10 @@ public class Movement {
     public DcMotor motorBackLeft;
     public DcMotor motorFrontRight;
     public DcMotor motorBackRight;
-    public DcMotor armLeft;
-    public DcMotor armRight;
-    public Servo coneHook;
-    public Servo armSwing;
+//    public DcMotor arm;
+//    public DcMotor armRight;
+//    public Servo coneHook;
+//    public Servo armSwing;
 
     private Boolean debug;
 
@@ -39,12 +39,12 @@ public class Movement {
         motorBackLeft = opmode.hardwareMap.dcMotor.get("motorBackLeft");
         motorFrontRight = opmode.hardwareMap.dcMotor.get("motorFrontRight");
         motorBackRight = opmode.hardwareMap.dcMotor.get("motorBackRight");
-        armLeft = opmode.hardwareMap.dcMotor.get("armLeft");
-        armRight = opmode.hardwareMap.dcMotor.get("armRight");
-        coneHook = opmode.hardwareMap.servo.get("coneHook");
-        armSwing = opmode.hardwareMap.servo.get("armSwing");
+//        armLeft = opmode.hardwareMap.dcMotor.get("armLeft");
+//        armRight = opmode.hardwareMap.dcMotor.get("armRight");
+//        coneHook = opmode.hardwareMap.servo.get("coneHook");
+//        armSwing = opmode.hardwareMap.servo.get("armSwing");
 
-        motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
+        motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
         motorBackRight.setDirection(DcMotor.Direction.REVERSE);
     }
 
