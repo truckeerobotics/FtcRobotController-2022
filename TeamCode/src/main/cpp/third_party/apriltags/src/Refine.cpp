@@ -538,9 +538,9 @@ int refineQuad(const cv::Mat& gmat,
 
       }
 
-      cv::namedWindow("image");
-      cv::imshow("image", debug_big);
-      cv::waitKey();
+      //cv::namedWindow("image");
+      //cv::imshow("image", debug_big);
+      //cv::waitKey();
 
     }
 
