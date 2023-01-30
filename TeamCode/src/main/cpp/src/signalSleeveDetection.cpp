@@ -41,7 +41,7 @@ int SignalSleeveDetection::detectSignalSide(uInt8Buffer brightnessDataContainer,
 
     TagDetector tagDetector(tagFamily);
 
-    cv::Point2d opticalCenter(bgrMat.rows, bgrMat.cols);
+    cv::Point2d opticalCenter(bgrMat.rows/2, bgrMat.cols/2);
 
     TagDetectionArray tagDetections;
     tagDetector.process(bgrMat, opticalCenter, tagDetections);

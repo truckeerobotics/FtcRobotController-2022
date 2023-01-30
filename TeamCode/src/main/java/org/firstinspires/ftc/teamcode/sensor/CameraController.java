@@ -40,17 +40,6 @@ public class CameraController {
     Context context;
     Telemetry telemetry;
 
-    // Since we are not in java 9 creating the map is a bit more ugly
-    private static HashMap<String, String> createNameMap() {
-        HashMap<String,String> cameraNameMap = new HashMap<String,String>();
-        cameraNameMap.put("Front Camera", "0");
-        cameraNameMap.put("Back Camera", "1");
-        return cameraNameMap;
-    }
-
-    // Camera Names
-    HashMap<String, String> cameraNames = createNameMap();
-
     // Cameras
     HashMap<String, Camera> cameras = new HashMap<String, Camera>();
 
@@ -65,7 +54,6 @@ public class CameraController {
         context = appContext;
         telemetry = robotTelemetry;
         cameraManager = (CameraManager) context.getSystemService(CAMERA_SERVICE);
-
 
         CameraStatus = telemetry.addData("Camera", "init");
         telemetry.update();

@@ -34,7 +34,7 @@ public class Autonomous {
 
     public Autonomous(LinearOpMode opmode){
         this.opmode = opmode;
-        this.move = new Movement(opmode, true);
+        this.move = new Movement(opmode, false);
         this.motorBackLeftEncoder = new Encoder(move.motorBackLeft);
         this.motorBackRightEncoder = new Encoder(move.motorBackRight);
         this.motorFrontLeftEncoder = new Encoder(move.motorFrontLeft);
@@ -46,12 +46,13 @@ public class Autonomous {
 
 
 
-        NativeLogging.initNativeLogging(opmode.telemetry);
-        opmode.telemetry.setAutoClear(false);
+        opmode.telemetry.setAutoClear(true);
 
         opmode.telemetry.addData("STATUS", "Waiting for start");
         opmode.telemetry.update();
         opmode.waitForStart();
+
+        NativeLogging.initNativeLogging(opmode.telemetry);
 
         cameraController = new CameraController();
         cameraController.init(opmode.hardwareMap.appContext, opmode.telemetry);
@@ -59,7 +60,8 @@ public class Autonomous {
         Camera frontCamera = cameraController.getCamera("0");
         frontCamera.addCallbacks(cameraCallback);
 
-        while (!opmode.isStopRequested() && opmode.getRuntime() < 5) {
+        opmode.resetRuntime();
+        while (!opmode.isStopRequested() && opmode.getRuntime() < 5 && sleeveLevel == 0) {
 
         }
 
@@ -84,8 +86,6 @@ public class Autonomous {
                 move.strafeLeft(-0.5);
             } else if(sleeveLevel == 3){
                 move.strafeLeft(0.5);
-
-
             }
             opmode.telemetry.update();
         }

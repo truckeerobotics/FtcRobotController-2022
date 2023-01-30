@@ -46,7 +46,12 @@ public class JVAuto extends LinearOpMode {
         motorFrontRight = hardwareMap.dcMotor.get("mFR");
         motorBackRight = hardwareMap.dcMotor.get("mBR");
 
-        double modification_value = 0.06;
+        motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorBackLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        double modification_value = 0.025;
 
         this.motorBackLeftEncoder = new Encoder(motorBackLeft, modification_value);
         this.motorBackRightEncoder = new Encoder(motorBackRight, modification_value);
@@ -54,13 +59,6 @@ public class JVAuto extends LinearOpMode {
         this.motorFrontRightEncoder = new Encoder(motorFrontRight, modification_value);
 
         Encoder[] encoderArray = {motorBackLeftEncoder, motorBackRightEncoder, motorFrontLeftEncoder, motorFrontRightEncoder};
-
-
-
-        motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorBackLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         NativeLogging.initNativeLogging(telemetry);
         telemetry.setAutoClear(false);
@@ -81,23 +79,39 @@ public class JVAuto extends LinearOpMode {
         Camera frontCamera = cameraController.getCamera("0");
         frontCamera.addCallbacks(cameraCallback);
 
-        wait(5f);
+        resetRuntime();
+        while (!isStopRequested() && getRuntime() < 5 && sleeveLevel == 0) {
+            //Waiting for detection
+        }
         frontCamera.shutdown();
 
-        double[] forwardSpeedArray = new double[]{-1, 1, -1, 1};
+        double[] forwardSpeedArray = new double[]{-1, -1, 1, 1};
 
-        driveInches(10, encoderArray, forwardSpeedArray, 0.5);
+        driveInches(24, encoderArray, forwardSpeedArray, 1);
 
         wait(0.5f);
 
-        double[] strafeSpeedArray = new double[]{-1, -1, 1, 1};
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
 
         if (sleeveLevel == 3) {
-            driveInches(10, encoderArray, forwardSpeedArray, 0.5);
-
+            telemetry.addData("3","3");
+            telemetry.update();
+            setMotorsStrafe(0.2f);
+            wait(5f);
         } else if (sleeveLevel == 1) {
-            driveInches(10, encoderArray, forwardSpeedArray, -0.5);
+            telemetry.addData("1","1");
+            telemetry.update();
+            setMotorsStrafe(-0.2f);
+            wait(5f);
         }
+
+        telemetry.addData("ENDED",sleeveLevel);
+        telemetry.update();
+
 
     }
 
@@ -109,16 +123,16 @@ public class JVAuto extends LinearOpMode {
     }
 
     private void setMotorsForwards(float speed){
-        motorFrontLeft.setPower(-speed);
-        motorBackLeft.setPower(-speed);
+        motorFrontLeft.setPower(speed);
+        motorBackLeft.setPower(speed);
         motorFrontRight.setPower(speed);
         motorBackRight.setPower(speed);
     }
 
     private void setMotorsStrafe(float speed) {
         motorFrontLeft.setPower(speed);
-        motorBackLeft.setPower(-speed);
-        motorFrontRight.setPower(speed);
+        motorBackLeft.setPower(speed);
+        motorFrontRight.setPower(-speed);
         motorBackRight.setPower(-speed);
     }
 
@@ -190,11 +204,20 @@ public class JVAuto extends LinearOpMode {
         for(int i=0; i<encoders.length; i++){
             encoders[i].reset();
         }
+        motorBackLeft.setPower(speeds[0]*speed);
+        motorBackRight.setPower(speeds[1]*speed);
+        motorFrontLeft.setPower(speeds[2]*speed);
+        motorFrontRight.setPower(speeds[3]*speed);
+        telemetry.addData("SPEED 0", speeds[0]*speed);
+        telemetry.addData("SPEED 1", speeds[1]*speed);
+        telemetry.addData("SPEED 2", speeds[2]*speed);
+        telemetry.addData("SPEED 3", speeds[3]*speed);
         while(checkEncoders(encoders, inches) && !isStopRequested()) {
-            motorBackLeft.setPower(speeds[0] *speed);
-            motorBackRight.setPower(speeds[1] *speed);
-            motorFrontLeft.setPower(speeds[2] *speed);
-            motorFrontRight.setPower(speeds[3] *speed);
+
         }
+        motorBackLeft.setPower(0);
+        motorBackRight.setPower(0);
+        motorFrontLeft.setPower(0);
+        motorFrontRight.setPower(0);
     }
 }

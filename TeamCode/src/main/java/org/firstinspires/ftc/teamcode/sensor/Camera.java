@@ -51,6 +51,7 @@ public class Camera {
     private Telemetry telemetry;
     private CameraManager cameraManager;
     private Handler threadHandler;
+    private CameraCaptureSession cameraCaptureSession;
 
     public Camera(String cameraId, CameraManager cameraManager, Telemetry opmodeTelemetry, Context appContext, Handler threadHandler) {
         this.telemetry = opmodeTelemetry;
@@ -131,8 +132,14 @@ public class Camera {
     }
 
     public void shutdown() {
-        cameraDevice.close();
+        if (cameraDevice != null) {
+            cameraDevice.close();
+        }
+        if (cameraCaptureSession != null) {
+            cameraCaptureSession.close();
+        }
         telemetry.clear();
+
     }
 
     /// --------------------------------------------------------------------------- ///
@@ -198,6 +205,9 @@ public class Camera {
         @Override public void onConfigured(CameraCaptureSession captureSession) {
             telemetry.addData("Capture", "Session Configured!");
             telemetry.update();
+
+            cameraCaptureSession = captureSession;
+
             try {
                 captureSession.setRepeatingRequest(captureSessionRequestBuilder.build(), imageCaptureCallback, threadHandler);
                 //captureSession.capture(captureSessionRequestBuilder.build(), imageCaptureCallback, threadHandler);

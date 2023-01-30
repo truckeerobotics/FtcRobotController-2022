@@ -15,6 +15,29 @@ public class Driver {
         this.opmode = opmode;
     }
 
+    // Constants for controlling the robot
+    // Driving
+    private final double LateralSpeed = -1;
+    private final double StrafeSpeed = 1;
+    private final double RotationalSpeed = 1;
+
+    // Smart driving
+    private final double drivingPowerForwardDelta = 0.025;
+    private final double drivingPowerBackwardDelta = 0.02;
+    private final double drivingPowerStrafeDelta = 0.05;
+    private final double drivingPowerRotationDelta = 0.07;
+
+    private final double drivingPowerDifferenceCutoff = 0.1;
+
+    // Control variables used for making driving *smooth*.
+    private double yTarget = 0;
+    private double xTarget = 0;
+    private double rxTarget = 0;
+
+    private double yCurrent = 0;
+    private double xCurrent = 0;
+    private double rxCurrent = 0;
+
     public void run(){
         DcMotor motorFrontLeft = opmode.hardwareMap.dcMotor.get("motorFrontLeft");
         DcMotor motorBackLeft = opmode.hardwareMap.dcMotor.get("motorBackLeft");
@@ -73,16 +96,15 @@ public class Driver {
 
             arm.setPower(opmode.gamepad2.left_stick_y);
 
-            double x = -opmode.gamepad1.left_stick_x * 1.1;
-            double y = opmode.gamepad1.left_stick_y;
-            double rx = -opmode.gamepad1.right_stick_x;
+            yTarget = -opmode.gamepad1.left_stick_y * LateralSpeed; // Remember, this is reversed!
+            xTarget = -opmode.gamepad1.left_stick_x * StrafeSpeed * 1.1; // Counteract imperfect strafing
+            rxTarget = -opmode.gamepad1.right_stick_x * RotationalSpeed;
 
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
 
             if(debug) {
-                opmode.telemetry.addData("x", x);
-                opmode.telemetry.addData("y", y);
-                opmode.telemetry.addData("rx", rx);
+                opmode.telemetry.addData("x", xTarget);
+                opmode.telemetry.addData("y", yTarget);
+                opmode.telemetry.addData("rx", rxTarget);
             }
 
 //            if(y != 0 && x == 0 && rx == 0){
@@ -94,17 +116,71 @@ public class Driver {
 //            }
 
             if(errorCorrection) {
-                Vector2 rot = imu.getHeadingCorrection(x, y);
-                x = rot.x;
-                y = rot.y;
+                Vector2 rot = imu.getHeadingCorrection(xTarget, yTarget);
+                xTarget = rot.x;
+                yTarget = rot.y;
                 if (debug) {
                     opmode.telemetry.addData("rot", rot.toString());
-                    opmode.telemetry.addData("new x", x);
-                    opmode.telemetry.addData("new y", y);
-                    opmode.telemetry.addData("new rx", rx);
+                    opmode.telemetry.addData("new x", xTarget);
+                    opmode.telemetry.addData("new y", yTarget);
+                    opmode.telemetry.addData("new rx", rxTarget);
                 }
             }
 
+
+
+
+
+            // If difference cutoff is not reached, then move current/actual movement to target movement.
+            if (!(Math.abs(yTarget - yCurrent) < drivingPowerDifferenceCutoff)) {
+                if (yTarget > yCurrent) {
+                    yCurrent += drivingPowerForwardDelta;
+                } else {
+                    yCurrent -= drivingPowerBackwardDelta;
+                }
+            } else {
+                yCurrent = yTarget;
+            }
+
+            if (!(Math.abs(xTarget - xCurrent) < drivingPowerDifferenceCutoff)) {
+                if (xTarget > xCurrent) {
+                    xCurrent += drivingPowerStrafeDelta;
+                } else {
+                    xCurrent -= drivingPowerStrafeDelta;
+                }
+            } else {
+                xCurrent = xTarget;
+            }
+
+            if (!(Math.abs(rxTarget - rxCurrent) < drivingPowerDifferenceCutoff)) {
+                if (rxTarget > rxCurrent) {
+                    rxCurrent += drivingPowerRotationDelta;
+                } else {
+                    rxCurrent -= drivingPowerRotationDelta;
+                }
+            } else {
+                rxCurrent = rxTarget;
+            }
+
+            // Debug
+            opmode.telemetry.addData("xTarget: ", xTarget);
+            opmode.telemetry.addData("yTarget: ", yTarget);
+            opmode.telemetry.addData("rxTarget: ", rxTarget);
+
+            opmode.telemetry.addData("xCurrent: ", xCurrent);
+            opmode.telemetry.addData("yCurrent: ", yCurrent);
+            opmode.telemetry.addData("rxCurrent: ", rxCurrent);
+
+            // Take things from smart/smooth driving and implement the intended axial changes.
+
+            double y = yCurrent;
+            double x = xCurrent;
+            double rx = rxCurrent;
+
+            // Denominator is the largest motor power (absolute value) or 1
+            // This ensures all the powers maintain the same ratio, but only when
+            // at least one is out of the range [-1, 1]
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
             double frontLeftPower = (y + x + rx) / denominator;
             double backLeftPower = (y - x + rx) / denominator;
             double frontRightPower = (y - x - rx) / denominator;
@@ -162,7 +238,7 @@ public class Driver {
             }
 
 
-            double movementModifier = 0.7;
+            double movementModifier = 0.55;
             if (speedToggle == true) {
                 movementModifier = 1;
             }
