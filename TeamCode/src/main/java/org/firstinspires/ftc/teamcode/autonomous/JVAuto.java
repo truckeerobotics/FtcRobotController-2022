@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.autonomous.opmodes;
+package org.firstinspires.ftc.teamcode.autonomous;
 
 import static org.firstinspires.ftc.teamcode.Robot.getSleeveLevel;
 import static org.firstinspires.ftc.teamcode.Robot.passImageBuffers;
@@ -16,14 +16,12 @@ import org.firstinspires.ftc.teamcode.other.NativeLogging;
 import org.firstinspires.ftc.teamcode.sensor.Camera;
 import org.firstinspires.ftc.teamcode.sensor.CameraController;
 import org.firstinspires.ftc.teamcode.sensor.Encoder;
+import org.firstinspires.ftc.teamcode.sensor.SleeveDetection;
 
 import java.nio.ByteBuffer;
 
 @Autonomous(name = "JV Autonomous")
 public class JVAuto extends LinearOpMode {
-
-    int sleeveLevel = 0;
-
     private CameraController cameraController;
 
     DcMotor motorFrontLeft;
@@ -60,30 +58,8 @@ public class JVAuto extends LinearOpMode {
 
         Encoder[] encoderArray = {motorBackLeftEncoder, motorBackRightEncoder, motorFrontLeftEncoder, motorFrontRightEncoder};
 
-        NativeLogging.initNativeLogging(telemetry);
-        telemetry.setAutoClear(false);
-        telemetry.addData("Log: ", "Init");
-        telemetry.update();
-
-        waitForStart();
-
-        telemetry.addData("Log: ", "Start");
-        telemetry.update();
-
-        cameraController = new CameraController();
-        cameraController.init(hardwareMap.appContext, telemetry);
-
-        telemetry.addData("Log: ", "Camera Controller Init");
-        telemetry.update();
-
-        Camera frontCamera = cameraController.getCamera("0");
-        frontCamera.addCallbacks(cameraCallback);
-
-        resetRuntime();
-        while (!isStopRequested() && getRuntime() < 5 && sleeveLevel == 0) {
-            //Waiting for detection
-        }
-        frontCamera.shutdown();
+        SleeveDetection s = new SleeveDetection(this);
+        int sleeveLevel = s.camera();
 
         double[] forwardSpeedArray = new double[]{-1, -1, 1, 1};
 
@@ -150,37 +126,6 @@ public class JVAuto extends LinearOpMode {
         }
     }
 
-    Camera.CameraCallback cameraCallback = new Camera.CameraCallback() {
-        public void openCallback() {
-
-        };
-        public void failedCallback(int error) {
-
-        };
-        private byte[] planeToByteBuffer(Image.Plane plane) {
-            ByteBuffer byteBuffer = plane.getBuffer();
-            byte[] byteBufferArray = new byte[byteBuffer.remaining()];
-            byteBuffer.get(byteBufferArray);
-            return byteBufferArray;
-        }
-        public void imageReadyCallback(Image latestImage) {
-            telemetry.addData("Camera Processor", "Running");
-            telemetry.update();
-            Image.Plane[] imagePlanes = latestImage.getPlanes();
-            byte[] yBuffer = planeToByteBuffer(imagePlanes[0]);
-            byte[] uBuffer = planeToByteBuffer(imagePlanes[1]);
-            byte[] vBuffer = planeToByteBuffer(imagePlanes[2]);
-
-            yuvImageSaveJPEG(latestImage);
-            passImageBuffers(yBuffer,uBuffer,vBuffer);
-            int detectedSleeveLevel = getSleeveLevel();
-            if (detectedSleeveLevel != -1) {
-                telemetry.addData("Log: ", "SLEEVE LEVEL DETECTED");
-                telemetry.update();
-                sleeveLevel = detectedSleeveLevel;
-            }
-        };
-    };
 
     private Boolean checkEncoders(Encoder[] encoders, int inches){
         Boolean running = true;

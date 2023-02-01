@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.movement.Hardware;
 import org.firstinspires.ftc.teamcode.other.Vector2;
 import org.firstinspires.ftc.teamcode.sensor.IMU;
 
@@ -39,14 +40,8 @@ public class Driver {
     private double rxCurrent = 0;
 
     public void run(){
-        DcMotor motorFrontLeft = opmode.hardwareMap.dcMotor.get("motorFrontLeft");
-        DcMotor motorBackLeft = opmode.hardwareMap.dcMotor.get("motorBackLeft");
-        DcMotor motorFrontRight = opmode.hardwareMap.dcMotor.get("motorFrontRight");
-        DcMotor motorBackRight = opmode.hardwareMap.dcMotor.get("motorBackRight");
-        DcMotor arm = opmode.hardwareMap.dcMotor.get("arm");
 
-        Servo coneHook = opmode.hardwareMap.servo.get("coneHook");
-        Servo armSwing = opmode.hardwareMap.servo.get("armSwing");
+        Hardware h = new Hardware(opmode, Hardware.VA);
 
         DriverInput input = new DriverInput(opmode.gamepad1, opmode.gamepad2);
         IMU imu = new IMU(opmode, "imu");
@@ -54,10 +49,10 @@ public class Driver {
         boolean toggle = false, toggle2 = false, errorCorrection = true, debug = true;
         double swingPos = 0.25, hookPos = 0;
 
-        motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
-        motorBackLeft.setDirection(DcMotor.Direction.REVERSE);
-        coneHook.setPosition(hookPos);
-        armSwing.setPosition(swingPos);
+        h.motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
+        h.motorBackLeft.setDirection(DcMotor.Direction.REVERSE);
+        h.coneHook.setPosition(hookPos);
+        h.armServo.setPosition(swingPos);
 
         opmode.telemetry.addData("STATUS", "Waiting for start");
         opmode.telemetry.update();
@@ -65,9 +60,6 @@ public class Driver {
         opmode.waitForStart();
 
         while (!opmode.isStopRequested()) {
-
-            opmode.telemetry.addData("debug", debug);
-
             if(input.onPush(opmode.gamepad1.x, "controller1ButtonX")) {
                 errorCorrection = !errorCorrection;
             }
@@ -94,26 +86,11 @@ public class Driver {
                 }
             }
 
-            arm.setPower(opmode.gamepad2.left_stick_y);
+            h.arm.setPower(opmode.gamepad2.left_stick_y);
 
             yTarget = -opmode.gamepad1.left_stick_y * LateralSpeed; // Remember, this is reversed!
             xTarget = -opmode.gamepad1.left_stick_x * StrafeSpeed * 1.1; // Counteract imperfect strafing
             rxTarget = -opmode.gamepad1.right_stick_x * RotationalSpeed;
-
-
-            if(debug) {
-                opmode.telemetry.addData("x", xTarget);
-                opmode.telemetry.addData("y", yTarget);
-                opmode.telemetry.addData("rx", rxTarget);
-            }
-
-//            if(y != 0 && x == 0 && rx == 0){
-//                motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
-//                motorBackLeft.setDirection(DcMotor.Direction.REVERSE);
-//            }else{
-//                motorFrontLeft.setDirection(DcMotor.Direction.FORWARD);
-//                motorBackLeft.setDirection(DcMotor.Direction.FORWARD);
-//            }
 
             if(errorCorrection) {
                 Vector2 rot = imu.getHeadingCorrection(xTarget, yTarget);
@@ -162,17 +139,7 @@ public class Driver {
                 rxCurrent = rxTarget;
             }
 
-            // Debug
-            opmode.telemetry.addData("xTarget: ", xTarget);
-            opmode.telemetry.addData("yTarget: ", yTarget);
-            opmode.telemetry.addData("rxTarget: ", rxTarget);
-
-            opmode.telemetry.addData("xCurrent: ", xCurrent);
-            opmode.telemetry.addData("yCurrent: ", yCurrent);
-            opmode.telemetry.addData("rxCurrent: ", rxCurrent);
-
             // Take things from smart/smooth driving and implement the intended axial changes.
-
             double y = yCurrent;
             double x = xCurrent;
             double rx = rxCurrent;
@@ -186,14 +153,15 @@ public class Driver {
             double frontRightPower = (y - x - rx) / denominator;
             double backRightPower = (y + x - rx) / denominator;
 
-            motorFrontLeft.setPower(frontLeftPower);
-            motorBackLeft.setPower(backLeftPower);
-            motorFrontRight.setPower(frontRightPower);
-            motorBackRight.setPower(backRightPower);
+            h.motorFrontLeft.setPower(frontLeftPower);
+            h.motorBackLeft.setPower(backLeftPower);
+            h.motorFrontRight.setPower(frontRightPower);
+            h.motorBackRight.setPower(backRightPower);
 
-            coneHook.setPosition(hookPos);
-            armSwing.setPosition(swingPos);
+            h.coneHook.setPosition(hookPos);
+            h.armServo.setPosition(swingPos);
 
+            opmode.telemetry.addData("debug (press y)", debug);
             if(debug){
                 opmode.telemetry.addData("errorCorrection", errorCorrection);
                 opmode.telemetry.addData("frontLeftPower", frontLeftPower);
@@ -204,6 +172,12 @@ public class Driver {
                 opmode.telemetry.addData("hookPos: ", hookPos);
                 opmode.telemetry.addData("Hook: ", toggle);
                 opmode.telemetry.addData("Swing: ", toggle2);
+                opmode.telemetry.addData("xTarget: ", xTarget);
+                opmode.telemetry.addData("yTarget: ", yTarget);
+                opmode.telemetry.addData("rxTarget: ", rxTarget);
+                opmode.telemetry.addData("xCurrent: ", xCurrent);
+                opmode.telemetry.addData("yCurrent: ", yCurrent);
+                opmode.telemetry.addData("rxCurrent: ", rxCurrent);
             }
 
             opmode.telemetry.update();
@@ -214,21 +188,17 @@ public class Driver {
 
 
     public void runJV(){
-        DcMotor motorFrontLeft = opmode.hardwareMap.dcMotor.get("mFL");
-        DcMotor motorBackLeft = opmode.hardwareMap.dcMotor.get("mBL");
-        DcMotor motorFrontRight = opmode.hardwareMap.dcMotor.get("mFR");
-        DcMotor motorBackRight = opmode.hardwareMap.dcMotor.get("mBR");
-        DcMotor motorArm = opmode.hardwareMap.dcMotor.get("arm");
-        Servo servoArm = opmode.hardwareMap.servo.get("sArm");
+        Hardware h = new Hardware(opmode, Hardware.JV);
 
-        motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
-        motorBackRight.setDirection(DcMotor.Direction.REVERSE);
+        h.motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
+        h.motorBackRight.setDirection(DcMotor.Direction.REVERSE);
 
         DriverInput input = new DriverInput(opmode.gamepad1, opmode.gamepad2);
 
         opmode.waitForStart();
 
         boolean speedToggle = false;
+        boolean debug = false;
 
         while (!opmode.isStopRequested()) {
 
@@ -253,35 +223,44 @@ public class Driver {
             double frontRightPower = (y - x - rx) / denominator;
             double backRightPower = (y + x - rx) / denominator;
 
-            motorFrontLeft.setPower(frontLeftPower);
-            motorBackLeft.setPower(backLeftPower);
-            motorFrontRight.setPower(frontRightPower);
-            motorBackRight.setPower(backRightPower);
+            h.motorFrontLeft.setPower(frontLeftPower);
+            h.motorBackLeft.setPower(backLeftPower);
+            h.motorFrontRight.setPower(frontRightPower);
+            h.motorBackRight.setPower(backRightPower);
 
             double armY = opmode.gamepad2.right_stick_y;
-            motorArm.setPower(armY);
+            h.arm.setPower(armY);
 
             double armX = opmode.gamepad2.left_stick_x;
-            opmode.telemetry.addData("servoArm.getPosition()", servoArm.getPosition());
+            opmode.telemetry.addData("servoArm.getPosition()", h.armServo.getPosition());
             opmode.telemetry.addData("armX", armX);
-            if(armX > 0 && servoArm.getPosition() < 0.5) {
-                servoArm.setPosition(servoArm.getPosition() + armX);
-            }else if(armX < 0 && servoArm.getPosition() > 0.0){
-                servoArm.setPosition(servoArm.getPosition() + armX);
+            if(armX > 0 && h.armServo.getPosition() < 0.5) {
+                h.armServo  .setPosition(h.armServo.getPosition() + armX);
+            }else if(armX < 0 && h.armServo.getPosition() > 0.0){
+                h.armServo.setPosition(h.armServo.getPosition() + armX);
             }
 
-            opmode.telemetry.addData("ARM Y", armY);
 
-            opmode.telemetry.addData("X", x);
-            opmode.telemetry.addData("Y", y);
-            opmode.telemetry.addData("RX", rx);
+            if(input.onPush(opmode.gamepad1.y, "controller1ButtonY")) {
+                debug  = !debug;
+            }
 
-            opmode.telemetry.addData("Front Left Power", frontLeftPower);
-            opmode.telemetry.addData("Back Left Power", backLeftPower);
-            opmode.telemetry.addData("Front Right Power", frontRightPower);
-            opmode.telemetry.addData("Back Right Power", backRightPower);
+            opmode.telemetry.addData("debug (press y)", debug);
 
-            opmode.telemetry.update();
+            if(debug){
+                opmode.telemetry.addData("ARM Y", armY);
+
+                opmode.telemetry.addData("X", x);
+                opmode.telemetry.addData("Y", y);
+                opmode.telemetry.addData("RX", rx);
+
+                opmode.telemetry.addData("Front Left Power", frontLeftPower);
+                opmode.telemetry.addData("Back Left Power", backLeftPower);
+                opmode.telemetry.addData("Front Right Power", frontRightPower);
+                opmode.telemetry.addData("Back Right Power", backRightPower);
+
+                opmode.telemetry.update();
+            }
         }
     }
 }

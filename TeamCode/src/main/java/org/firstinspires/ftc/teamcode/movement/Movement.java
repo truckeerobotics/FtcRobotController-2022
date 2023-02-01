@@ -10,73 +10,50 @@ import org.firstinspires.ftc.teamcode.other.Vector2;
 
 public class Movement {
 
-    private HardwareMap hardware;
     private LinearOpMode opmode;
-    public DcMotor motorFrontLeft;
-    public DcMotor motorBackLeft;
-    public DcMotor motorFrontRight;
-    public DcMotor motorBackRight;
-//    public DcMotor arm;
-//    public DcMotor armRight;
-//    public Servo coneHook;
-//    public Servo armSwing;
+    public Hardware h;
 
     private Boolean debug;
 
-    public Movement(LinearOpMode opmode) {
+    public Movement(LinearOpMode opmode, Hardware h) {
+        this.h = h;
+        debug = false;
         init(opmode);
     }
 
-    public Movement(LinearOpMode opmode, Boolean debug){
+    public Movement(LinearOpMode opmode, Hardware h, Boolean debug){
+        this.h = h;
         this.debug = debug;
         init(opmode);
     }
 
     private void init(LinearOpMode opmode){
-        hardware = opmode.hardwareMap;
         this.opmode = opmode;
-        motorFrontLeft = opmode.hardwareMap.dcMotor.get("motorFrontLeft");
-        motorBackLeft = opmode.hardwareMap.dcMotor.get("motorBackLeft");
-        motorFrontRight = opmode.hardwareMap.dcMotor.get("motorFrontRight");
-        motorBackRight = opmode.hardwareMap.dcMotor.get("motorBackRight");
-//        armLeft = opmode.hardwareMap.dcMotor.get("armLeft");
-//        armRight = opmode.hardwareMap.dcMotor.get("armRight");
-//        coneHook = opmode.hardwareMap.servo.get("coneHook");
-//        armSwing = opmode.hardwareMap.servo.get("armSwing");
 
-        motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
-        motorBackRight.setDirection(DcMotor.Direction.REVERSE);
+        h.motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
+        h.motorBackRight.setDirection(DcMotor.Direction.REVERSE);
     }
 
     public void driveForward(double speed){
-        motorBackLeft.setPower(speed);
-        motorBackRight.setPower(speed);
-        motorFrontLeft.setPower(speed);
-        motorFrontRight.setPower(speed);
+        h.motorBackLeft.setPower(speed);
+        h.motorBackRight.setPower(speed);
+        h.motorFrontLeft.setPower(speed);
+        h.motorFrontRight.setPower(speed);
     }
 
     public void strafeLeft(double speed){
-        motorBackLeft.setPower(speed*-1);
-        motorBackRight.setPower(speed);
-        motorFrontLeft.setPower(speed);
-        motorFrontRight.setPower(speed*-1);
+        h.motorBackLeft.setPower(speed*-1);
+        h.motorBackRight.setPower(speed);
+        h.motorFrontLeft.setPower(speed);
+        h.motorFrontRight.setPower(speed*-1);
     }
 
-    public static final int LEFT = 0;
-    public static final int RIGHT = 1;
-    public void turn(int direction, double speed){
-        if(direction == LEFT){
-            //turn here
-        }else{
-            //turn here
-        }
-    }
 
     public void stop(){
-        motorBackLeft.setPower(0);
-        motorFrontRight.setPower(0);
-        motorFrontLeft.setPower(0);
-        motorBackRight.setPower(0);
+        h.motorBackLeft.setPower(0);
+        h.motorFrontRight.setPower(0);
+        h.motorFrontLeft.setPower(0);
+        h.motorBackRight.setPower(0);
     }
 
     private Boolean checkEncoders(Encoder[] encoders, int inches){
@@ -98,33 +75,6 @@ public class Movement {
     }
 
 
-//    private Boolean checkEncoders(Encoder[] encoders, Encoder[] negativeEncoders, int inches){
-//        Boolean running = true;
-//        Boolean negativeRunning = true;
-//        if(debug){
-//            opmode.telemetry.addData("STATUS", "Encoder debug");
-//            opmode.telemetry.addData("Target", inches);
-//        }
-//        for(int i=0; i<encoders.length; i++){
-//            if(encoders[i].getDifference() > inches){
-//                running = false;
-//            }
-//            if(debug){
-//                opmode.telemetry.addData(i + "", encoders[i].getDifference());
-//            }
-//        }
-//        for(int i=0; i<negativeEncoders.length; i++){
-//            if(negativeEncoders[i].getDifference() > -inches){
-//                negativeRunning = false;
-//            }
-//            if(debug){
-//                opmode.telemetry.addData(i + "", negativeEncoders[i].getDifference());
-//            }
-//        }
-//        opmode.telemetry.update();
-//        return running && negativeRunning;
-//    }
-
     public void driveInches(int inches, double speed, Encoder[] encoders){
         for(int i=0; i<encoders.length; i++){
             encoders[i].reset();
@@ -133,32 +83,4 @@ public class Movement {
             driveForward(speed);
         }
     }
-
-    public void strafeLeftInches(int inches, double speed, Encoder[] encoders){
-        while(checkEncoders(encoders, inches) && !opmode.isStopRequested()) {
-            strafeLeft(speed);
-        }
-    }
-
-    /**
-     * This method moves the robot to a certain position created with the Vector2 class
-     * @param pos Inputted position from Vector2 that is the target point to end at
-     * @param speed Target speed for robot to move to target position
-     */
-    public void goToPoint(Vector2 pos, double speed){
-
-    }
-
-    /**
-     * This method moves the robot to certain set positions inside an array with Vector2 points
-     * @param points Array of points for robot to move to
-     * @param speed Target speed of robot to follow selected path
-     */
-    public void path(Vector2[] points, double speed){
-        for(int i=0; i<points.length; i++){
-            goToPoint(points[i], speed);
-        }
-    }
-
-
 }

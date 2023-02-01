@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.autonomous.Autonomous;
+import org.firstinspires.ftc.teamcode.autonomous.VAuto;
 import org.firstinspires.ftc.teamcode.driver.Driver;
 import org.firstinspires.ftc.teamcode.other.Tester;
 
@@ -42,11 +42,6 @@ public class Robot2 {
         } else if(type.equals("Testing")){
             Tester test = new Tester(opmode);
             test.run();
-        } else {
-            Autonomous auto = new Autonomous(opmode);
-            if(type.equals("Camera")){
-                auto.camera();
-            }
         }
     }
 }

@@ -1,57 +1,29 @@
-package org.firstinspires.ftc.teamcode.autonomous;
+package org.firstinspires.ftc.teamcode.sensor;
 
 import static org.firstinspires.ftc.teamcode.Robot.getSleeveLevel;
 import static org.firstinspires.ftc.teamcode.Robot.passImageBuffers;
 import static org.firstinspires.ftc.teamcode.Robot.yuvImageSaveJPEG;
 
-import android.app.Activity;
-import android.graphics.Color;
 import android.media.Image;
-import android.view.View;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 
-import org.firstinspires.ftc.teamcode.movement.Movement;
 import org.firstinspires.ftc.teamcode.other.NativeLogging;
-import org.firstinspires.ftc.teamcode.sensor.Camera;
-import org.firstinspires.ftc.teamcode.sensor.CameraController;
-import org.firstinspires.ftc.teamcode.sensor.Encoder;
 
 import java.nio.ByteBuffer;
 
-public class Autonomous {
-    LinearOpMode opmode;
-    Movement move;
-    Encoder motorBackLeftEncoder;
-    Encoder motorBackRightEncoder;
-    Encoder motorFrontLeftEncoder;
-    Encoder motorFrontRightEncoder;
+public class SleeveDetection {
 
+    private int sleeveLevel = 0;
     private CameraController cameraController;
+    private LinearOpMode opmode;
 
-    int sleeveLevel = 0;
-
-    public Autonomous(LinearOpMode opmode){
+    public SleeveDetection(LinearOpMode opmode){
         this.opmode = opmode;
-        this.move = new Movement(opmode, false);
-        this.motorBackLeftEncoder = new Encoder(move.motorBackLeft);
-        this.motorBackRightEncoder = new Encoder(move.motorBackRight);
-        this.motorFrontLeftEncoder = new Encoder(move.motorFrontLeft);
-        this.motorFrontRightEncoder = new Encoder(move.motorFrontRight);
     }
 
 
-    public void camera(){
-
-
-
-        opmode.telemetry.setAutoClear(true);
-
-        opmode.telemetry.addData("STATUS", "Waiting for start");
-        opmode.telemetry.update();
-        opmode.waitForStart();
-
+    public int camera(){
         NativeLogging.initNativeLogging(opmode.telemetry);
 
         cameraController = new CameraController();
@@ -66,30 +38,7 @@ public class Autonomous {
         }
 
         frontCamera.shutdown();
-
-        Encoder[] encoderArray = {motorBackLeftEncoder, motorBackRightEncoder, motorFrontLeftEncoder, motorFrontRightEncoder};
-
-        move.driveInches(50, 0.75, encoderArray);
-        move.stop();
-
-        opmode.resetRuntime();
-        while(opmode.getRuntime() < 3 && !opmode.isStopRequested ()){
-            opmode.telemetry.addData("STATUS", "waiting...");
-            opmode.telemetry.update();
-        }
-
-        opmode.resetRuntime();
-        while(opmode.getRuntime() < 4 && !opmode.isStopRequested()){
-            opmode.telemetry.addData("LEVEL", sleeveLevel);
-
-            if(sleeveLevel == 1){
-                move.strafeLeft(-0.5);
-            } else if(sleeveLevel == 3){
-                move.strafeLeft(0.5);
-            }
-            opmode.telemetry.update();
-        }
-        move.stop();
+        return sleeveLevel;
     }
 
     Camera.CameraCallback cameraCallback = new Camera.CameraCallback() {
@@ -123,4 +72,5 @@ public class Autonomous {
             }
         };
     };
+
 }
